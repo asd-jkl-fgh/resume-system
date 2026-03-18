@@ -77,21 +77,18 @@ function generateResumeHTML(data: ResumeData): string {
           width: 190mm; 
           min-height: 277mm; 
           padding: 8mm; 
-          page-break-after: always;
           background: white;
         }
-        .page:last-child { page-break-after: auto; }
         
         .header { 
           display: flex;
           align-items: center;
-          justify-content: center;
-          margin-bottom: 5mm; 
+          margin-bottom: 3mm; 
           border-bottom: 2px solid #333; 
-          padding-bottom: 3mm;
+          padding-bottom: 2mm;
         }
-        .header img { height: 25px; margin-right: 15px; }
-        .header-title { text-align: center; }
+        .header img { height: 25px; margin-right: 10px; }
+        .header-title { flex: 1; text-align: center; }
         .header h1 { font-size: 18pt; margin-bottom: 3px; }
         .header p { color: #666; font-size: 9pt; }
         
