@@ -69,10 +69,13 @@ const resumeSchema = z.object({
   // 本公司亲友
   incompany_detail: z.array(z.any()),
   
-  // 紧急联系人
-  emergency_name: z.string().min(1, "请输入紧急联系人姓名"),
-  emergency_relation: z.string().min(1, "请输入紧急联系人关系"),
-  emergency_mobilephone: z.string().min(11, "请输入正确的紧急联系人手机号码"),
+  // 紧急联系人（至少2位）
+  emergency_contacts: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    relation: z.string(),
+    mobilephone: z.string(),
+  })).min(2, "请至少添加2位紧急联系人"),
   
   // 其他信息
   hobby: z.string(),

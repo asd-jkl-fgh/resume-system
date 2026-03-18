@@ -90,16 +90,18 @@ async function sendToFeishu(resumeData: ResumeData): Promise<void> {
     '工作职责理解': resumeData.job_duty,
     '职业规划': resumeData.plan,
     
-    // 紧急联系人
-    '紧急联系人': resumeData.emergency_name,
-    '紧急联系人关系': resumeData.emergency_relation,
-    '紧急联系人电话': resumeData.emergency_mobilephone,
-    
     // 其他信息
     '兴趣爱好': resumeData.hobby,
     '其他说明': resumeData.other,
     '提交时间': new Date().toLocaleString('zh-CN'),
   };
+
+  // 添加紧急联系人（转为文本）
+  if (resumeData.emergency_contacts.length > 0) {
+    fields['紧急联系人'] = resumeData.emergency_contacts
+      .map((contact, index) => `联系人${index + 1}: ${contact.name}(${contact.relation}) ${contact.mobilephone}`)
+      .join('\n');
+  }
 
   // 添加教育经历（转为文本）
   if (resumeData.education_detail.length > 0) {
@@ -160,10 +162,10 @@ export async function POST(request: NextRequest) {
         !resumeData.current_status || !resumeData.salary_expectation ||
         !resumeData.name || !resumeData.sex || !resumeData.birthday ||
         !resumeData.mobilephone || !resumeData.email ||
-        !resumeData.emergency_name || !resumeData.emergency_relation ||
-        !resumeData.emergency_mobilephone || !resumeData.declaration) {
+        !resumeData.emergency_contacts || resumeData.emergency_contacts.length < 2 ||
+        !resumeData.declaration) {
       return NextResponse.json(
-        { success: false, error: '请填写所有必填字段' },
+        { success: false, error: '请填写所有必填字段（包括至少2位紧急联系人）' },
         { status: 400 }
       );
     }
