@@ -1,25 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ResumeData } from '@/types/resume';
+import { processResumeAndNotify } from '@/lib/resume-pdf';
 
-// 飞书开放平台 API 配置
-// 需要在环境变量中配置以下信息：
-// FEISHU_APP_ID: 飞书应用的 App ID
-// FEISHU_APP_SECRET: 飞书应用的 App Secret
-// FEISHU_BITABLE_TOKEN: 飞书多维表格的 Token (从多维表格URL中获取)
-// FEISHU_TABLE_ID: 飞书多维表格中表格的 ID
+// 飞书开放平台 API 配置（可选）
+// 如果配置了多维表格，数据会同时写入多维表格
 
 interface FeishuTokenResponse {
   access_token: string;
   expires_in: number;
 }
 
-// 获取飞书访问令牌
+// 获取飞书访问令牌（用于多维表格）
 async function getFeishuAccessToken(): Promise<string> {
   const appId = process.env.FEISHU_APP_ID;
   const appSecret = process.env.FEISHU_APP_SECRET;
 
   if (!appId || !appSecret) {
-    throw new Error('飞书应用配置缺失，请检查环境变量 FEISHU_APP_ID 和 FEISHU_APP_SECRET');
+    throw new Error('飞书应用配置缺失');
   }
 
   const response = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
@@ -42,114 +39,102 @@ async function getFeishuAccessToken(): Promise<string> {
   return data.tenant_access_token;
 }
 
-// 将简历数据发送到飞书多维表格
-async function sendToFeishu(resumeData: ResumeData): Promise<void> {
-  const token = await getFeishuAccessToken();
+// 将简历数据发送到飞书多维表格（可选）
+async function sendToFeishuBitable(resumeData: ResumeData): Promise<void> {
   const bitableToken = process.env.FEISHU_BITABLE_TOKEN;
   const tableId = process.env.FEISHU_TABLE_ID;
 
   if (!bitableToken || !tableId) {
-    throw new Error('飞书多维表格配置缺失，请检查环境变量 FEISHU_BITABLE_TOKEN 和 FEISHU_TABLE_ID');
+    // 没有配置多维表格，跳过
+    return;
   }
 
-  // 构建多维表格记录
-  const fields: Record<string, any> = {
-    // 应聘渠道
-    '应聘渠道': resumeData.channel_type,
-    '推荐人': resumeData.channel_referrer,
-    '其他渠道说明': resumeData.channel_other,
-    
-    // 应聘信息
-    '应聘岗位': resumeData.post,
-    '预计到岗时间': resumeData.entry_date,
-    '岗位性质': resumeData.job_type,
-    '当前状态': resumeData.current_status === '其他' ? resumeData.current_status_other : resumeData.current_status,
-    '目前月薪': resumeData.current_salary,
-    '期望月薪': resumeData.salary_expectation,
-    
-    // 个人资料
-    '姓名（中文）': resumeData.name,
-    '姓名（英文）': resumeData.name_en,
-    '性别': resumeData.sex,
-    '出生日期': resumeData.birthday,
-    '毕业院校': resumeData.school,
-    '最高学历/专业': resumeData.degree,
-    '户籍地': resumeData.household_address,
-    '手机': resumeData.mobilephone,
-    '电子邮件': resumeData.email,
-    '婚姻状况': resumeData.marriage,
-    '现居住地址': resumeData.living_address,
-    '是否曾患重大疾病': resumeData.has_disease,
-    '是否曾发生劳动纠纷': resumeData.has_dispute,
-    '是否曾被判刑或拘留': resumeData.has_criminal,
-    
-    // 个人特质
-    '性格特点': resumeData.character,
-    '特长': resumeData.speciality,
-    '项目经历': resumeData.project_detail,
-    '工作职责理解': resumeData.job_duty,
-    '职业规划': resumeData.plan,
-    
-    // 其他信息
-    '兴趣爱好': resumeData.hobby,
-    '其他说明': resumeData.other,
-    '提交时间': new Date().toLocaleString('zh-CN'),
-  };
+  try {
+    const token = await getFeishuAccessToken();
 
-  // 添加紧急联系人（转为文本）
-  if (resumeData.emergency_contacts.length > 0) {
-    fields['紧急联系人'] = resumeData.emergency_contacts
-      .map((contact, index) => `联系人${index + 1}: ${contact.name}(${contact.relation}) ${contact.mobilephone}`)
-      .join('\n');
-  }
+    // 构建多维表格记录
+    const fields: Record<string, any> = {
+      '应聘渠道': resumeData.channel_type,
+      '推荐人': resumeData.channel_referrer,
+      '其他渠道说明': resumeData.channel_other,
+      '应聘岗位': resumeData.post,
+      '预计到岗时间': resumeData.entry_date,
+      '岗位性质': resumeData.job_type,
+      '当前状态': resumeData.current_status === '其他' ? resumeData.current_status_other : resumeData.current_status,
+      '目前月薪': resumeData.current_salary,
+      '期望月薪': resumeData.salary_expectation,
+      '姓名（中文）': resumeData.name,
+      '姓名（英文）': resumeData.name_en,
+      '性别': resumeData.sex,
+      '出生日期': resumeData.birthday,
+      '毕业院校': resumeData.school,
+      '最高学历/专业': resumeData.degree,
+      '户籍地': resumeData.household_address,
+      '手机': resumeData.mobilephone,
+      '电子邮件': resumeData.email,
+      '婚姻状况': resumeData.marriage,
+      '现居住地址': resumeData.living_address,
+      '是否曾患重大疾病': resumeData.has_disease,
+      '是否曾发生劳动纠纷': resumeData.has_dispute,
+      '是否曾被判刑或拘留': resumeData.has_criminal,
+      '性格特点': resumeData.character,
+      '特长': resumeData.speciality,
+      '项目经历': resumeData.project_detail,
+      '工作职责理解': resumeData.job_duty,
+      '职业规划': resumeData.plan,
+      '兴趣爱好': resumeData.hobby,
+      '其他说明': resumeData.other,
+      '提交时间': new Date().toLocaleString('zh-CN'),
+    };
 
-  // 添加教育经历（转为文本）
-  if (resumeData.education_detail.length > 0) {
-    fields['教育经历'] = resumeData.education_detail
-      .map((edu) => `${edu.start}~${edu.end} ${edu.school} ${edu.major} ${edu.degree}`)
-      .join('\n');
-  }
-
-  // 添加工作经历（转为文本）
-  if (resumeData.career_detail.length > 0) {
-    fields['工作经历'] = resumeData.career_detail
-      .map((work) => `${work.start}~${work.end} ${work.company} ${work.department} ${work.job} 证明人:${work.reference || '无'}`)
-      .join('\n');
-  }
-
-  // 添加家庭信息（转为文本）
-  if (resumeData.family_info.length > 0) {
-    fields['家庭信息'] = resumeData.family_info
-      .map((family) => `${family.name}(${family.relation}) ${family.organ} ${family.work}`)
-      .join('\n');
-  }
-
-  // 添加亲友信息（转为文本）
-  if (resumeData.incompany_detail.length > 0) {
-    fields['本公司亲友'] = resumeData.incompany_detail
-      .map((friend) => `${friend.name} ${friend.work} ${friend.relation}`)
-      .join('\n');
-  }
-
-  // 发送到飞书多维表格
-  const response = await fetch(
-    `https://open.feishu.cn/open-apis/bitable/v1/apps/${bitableToken}/tables/${tableId}/records`,
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        fields: fields,
-      }),
+    // 添加紧急联系人
+    if (resumeData.emergency_contacts.length > 0) {
+      fields['紧急联系人'] = resumeData.emergency_contacts
+        .map((contact, index) => `联系人${index + 1}: ${contact.name}(${contact.relation}) ${contact.mobilephone}`)
+        .join('\n');
     }
-  );
 
-  const data = await response.json();
-  
-  if (data.code !== 0) {
-    throw new Error(`添加飞书记录失败: ${data.msg}`);
+    // 添加教育经历
+    if (resumeData.education_detail.length > 0) {
+      fields['教育经历'] = resumeData.education_detail
+        .map((edu) => `${edu.start}~${edu.end} ${edu.school} ${edu.major} ${edu.degree}`)
+        .join('\n');
+    }
+
+    // 添加工作经历
+    if (resumeData.career_detail.length > 0) {
+      fields['工作经历'] = resumeData.career_detail
+        .map((work) => `${work.start}~${work.end} ${work.company} ${work.department} ${work.job} 证明人:${work.reference || '无'}`)
+        .join('\n');
+    }
+
+    // 添加家庭信息
+    if (resumeData.family_info.length > 0) {
+      fields['家庭信息'] = resumeData.family_info
+        .map((family) => `${family.name}(${family.relation}) ${family.organ} ${family.work}`)
+        .join('\n');
+    }
+
+    // 添加亲友信息
+    if (resumeData.incompany_detail.length > 0) {
+      fields['本公司亲友'] = resumeData.incompany_detail
+        .map((friend) => `${friend.name} ${friend.work} ${friend.relation}`)
+        .join('\n');
+    }
+
+    await fetch(
+      `https://open.feishu.cn/open-apis/bitable/v1/apps/${bitableToken}/tables/${tableId}/records`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fields }),
+      }
+    );
+  } catch (error) {
+    console.error('写入飞书多维表格失败（非关键错误）:', error);
   }
 }
 
@@ -170,11 +155,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 发送到飞书
-    await sendToFeishu(resumeData);
+    // 1. 生成 PDF 并发送飞书 Webhook 通知
+    const { pdfUrl } = await processResumeAndNotify(resumeData);
+
+    // 2. 写入飞书多维表格（可选，如果配置了的话）
+    await sendToFeishuBitable(resumeData);
 
     return NextResponse.json(
-      { success: true, message: '简历提交成功' },
+      { 
+        success: true, 
+        message: '简历提交成功',
+        pdfUrl: pdfUrl
+      },
       { status: 200 }
     );
   } catch (error: any) {
