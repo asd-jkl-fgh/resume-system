@@ -69,25 +69,31 @@ function generateResumeHTML(data: ResumeData): string {
           font-family: "Microsoft YaHei", "SimHei", "Helvetica Neue", Arial, sans-serif; 
           font-size: 10pt; 
           line-height: 1.3;
-          width: 190mm;
+          width: 210mm;
           margin: 0 auto;
           padding: 0;
         }
         .page { 
-          width: 190mm; 
-          padding: 8mm; 
+          width: 210mm; 
+          padding: 10mm; 
           background: white;
+          page-break-after: auto;
+          page-break-inside: avoid;
+        }
+        body {
+          page-break-after: auto;
         }
         
         .header { 
           display: flex;
           align-items: center;
+          justify-content: center;
           margin-bottom: 3mm; 
           border-bottom: 2px solid #333; 
           padding-bottom: 2mm;
         }
-        .header img { height: 25px; margin-right: 10px; }
-        .header-title { flex: 1; text-align: center; }
+        .header img { height: 25px; margin-right: 15px; margin-left: 0; }
+        .header-title { text-align: center; }
         .header h1 { font-size: 18pt; margin-bottom: 3px; }
         .header p { color: #666; font-size: 9pt; }
         
