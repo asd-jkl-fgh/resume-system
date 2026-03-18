@@ -139,22 +139,8 @@ export function PersonalSection({ form }: PersonalSectionProps) {
           />
         </div>
 
-        {/* 户籍地、手机、电子邮件 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="household_address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>户籍地</FormLabel>
-                <FormControl>
-                  <Input placeholder="如：广东省深圳市" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+        {/* 手机、电子邮件 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="mobilephone"
@@ -228,20 +214,36 @@ export function PersonalSection({ form }: PersonalSectionProps) {
           )}
         />
 
-        {/* 现居住地址及邮政编码 */}
-        <FormField
-          control={form.control}
-          name="living_address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>现居住地址及邮政编码</FormLabel>
-              <FormControl>
-                <Input placeholder="如：广东省深圳市南山区xx路xx号，518000" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* 户籍地、现居住地址 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="household_address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>户籍地</FormLabel>
+                <FormControl>
+                  <Input placeholder="如：广东省深圳市" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="living_address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>现居住地址及邮政编码</FormLabel>
+                <FormControl>
+                  <Input placeholder="如：广东省深圳市南山区xx路xx号，518000" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* 健康和法律状况 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

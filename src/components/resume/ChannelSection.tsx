@@ -30,7 +30,7 @@ export function ChannelSection({ form }: ChannelSectionProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* 应聘渠道选择 */}
+        {/* 应聘渠道选择 - 横向排列 */}
         <FormField
           control={form.control}
           name="channel_type"
@@ -41,29 +41,29 @@ export function ChannelSection({ form }: ChannelSectionProps) {
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className="space-y-3"
+                  className="flex flex-wrap gap-6"
                 >
                   <FormItem className="flex items-center space-x-2">
                     <FormControl>
                       <RadioGroupItem value="网络渠道" />
                     </FormControl>
-                    <FormLabel className="font-normal">网络渠道（Boss、猎聘等）</FormLabel>
+                    <FormLabel className="font-normal whitespace-nowrap">网络渠道</FormLabel>
                   </FormItem>
                   <div className="flex items-center flex-wrap gap-2">
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
                         <RadioGroupItem value="内部推荐" />
                       </FormControl>
-                      <FormLabel className="font-normal">公司内部推荐</FormLabel>
+                      <FormLabel className="font-normal whitespace-nowrap">公司内部推荐</FormLabel>
                     </FormItem>
                     {watchChannelType === "内部推荐" && (
                       <FormField
                         control={form.control}
                         name="channel_referrer"
                         render={({ field }) => (
-                          <FormItem className="flex-1 min-w-[200px]">
+                          <FormItem>
                             <FormControl>
-                              <Input placeholder="推荐人姓名" {...field} />
+                              <Input placeholder="推荐人姓名" {...field} className="w-32" />
                             </FormControl>
                           </FormItem>
                         )}
@@ -75,16 +75,16 @@ export function ChannelSection({ form }: ChannelSectionProps) {
                       <FormControl>
                         <RadioGroupItem value="其他渠道" />
                       </FormControl>
-                      <FormLabel className="font-normal">其他渠道</FormLabel>
+                      <FormLabel className="font-normal whitespace-nowrap">其他渠道</FormLabel>
                     </FormItem>
                     {watchChannelType === "其他渠道" && (
                       <FormField
                         control={form.control}
                         name="channel_other"
                         render={({ field }) => (
-                          <FormItem className="flex-1 min-w-[200px]">
+                          <FormItem>
                             <FormControl>
-                              <Input placeholder="请填写渠道" {...field} />
+                              <Input placeholder="请填写渠道" {...field} className="w-32" />
                             </FormControl>
                           </FormItem>
                         )}
