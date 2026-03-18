@@ -70,6 +70,7 @@ export function EducationSection({ form }: EducationSectionProps) {
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <span>🎓</span> 教育及培训经历
+            <span className="text-sm text-gray-400 font-normal ml-2">(请从高中开始填写)</span>
           </span>
           <Button type="button" size="sm" onClick={handleAdd}>
             <Plus className="w-4 h-4 mr-1" /> 添加

@@ -227,7 +227,7 @@ function generateResumeHTML(data: ResumeData): string {
         </div>
 
         <div class="section">
-          <div class="section-title">三、教育经历</div>
+          <div class="section-title">三、教育经历 <span style="font-size: 8pt; font-weight: normal;">（请从高中开始填写）</span></div>
           <table>
             <tr style="background: #e6e6e6;">
               <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">起始</td>
