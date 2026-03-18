@@ -100,7 +100,7 @@ function generateResumeHTML(data: ResumeData): string {
         .header p { color: #666; font-size: 9pt; margin-top: 5px; }
         .header-right { width: 80px; }
         
-        .section { margin-bottom: 4mm; }
+        .section { margin-bottom: 4mm; page-break-inside: avoid; }
         .section-title { 
           font-size: 11pt; 
           font-weight: bold; 
@@ -110,7 +110,7 @@ function generateResumeHTML(data: ResumeData): string {
           border-left: 3px solid #1890ff;
         }
         
-        table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9pt; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9pt; page-break-inside: avoid; }
         td { padding: 1px 3px; border: 1px solid #333; }
         td.label { width: 28mm; background: #f5f5f5; font-weight: 500; }
         td.label2 { width: 22mm; background: #f5f5f5; font-weight: 500; }
