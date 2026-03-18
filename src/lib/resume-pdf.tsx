@@ -135,6 +135,34 @@ function generateResumeHTML(data: ResumeData): string {
           border-top: 1px solid #eee;
           padding-top: 3mm;
         }
+        
+        .declaration {
+          margin-top: 10mm;
+          padding: 5mm;
+          border: 1px solid #333;
+        }
+        .declaration-title {
+          font-size: 12pt;
+          font-weight: bold;
+          margin-bottom: 5mm;
+        }
+        .declaration-content {
+          font-size: 8pt;
+          line-height: 1.6;
+          margin-bottom: 8mm;
+          text-align: justify;
+        }
+        .declaration-sign {
+          display: flex;
+          justify-content: space-between;
+          font-size: 9pt;
+        }
+        .sign-line {
+          display: inline-block;
+          min-width: 50mm;
+          border-bottom: 1px solid #333;
+          margin: 0 3mm;
+        }
       </style>
     </head>
     <body>
@@ -341,6 +369,20 @@ function generateResumeHTML(data: ResumeData): string {
 
         <div class="footer">
           招聘系统-EVO | 本登记表由系统自动生成
+        </div>
+
+        <!-- 声明 -->
+        <div class="declaration">
+          <div class="declaration-title">声明</div>
+          <div class="declaration-content">
+            本人已经明白及接受上述之个人资料保障原则。同时，有关本人在求职申请表上所填写之一切均真实及正确。在必要时同意授权上海进化时代营销策划有限公司对上述信息进行核实确认。一旦以上任意陈述被发现不实或本人蓄意隐瞒相关事实，公司有权立即解除劳动关系并不给予任何经济补偿。
+          </div>
+          <div class="declaration-sign">
+            <span>应聘人签署：</span>
+            <span class="sign-line">　</span>
+            <span>应聘日期：</span>
+            <span class="sign-line">　</span>
+          </div>
         </div>
       </div>
     </body>
