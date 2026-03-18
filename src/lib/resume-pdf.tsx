@@ -90,13 +90,14 @@ function generateResumeHTML(data: ResumeData): string {
           justify-content: space-between;
           margin-bottom: 3mm; 
           border-bottom: 2px solid #333; 
-          padding-bottom: 2mm;
+          padding: 5mm 0;
+          min-height: 30px;
         }
         .header-left { display: flex; align-items: center; }
         .header img { height: 25px; }
-        .header-title { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
+        .header-title { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: 100%; }
         .header h1 { font-size: 18pt; margin-bottom: 3px; }
-        .header p { color: #666; font-size: 9pt; }
+        .header p { color: #666; font-size: 9pt; margin-top: 5px; }
         .header-right { width: 80px; }
         
         .section { margin-bottom: 4mm; }
