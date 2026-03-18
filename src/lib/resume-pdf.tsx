@@ -275,10 +275,6 @@ function generateResumeHTML(data: ResumeData): string {
               <td>${data.project_detail || '/'}</td>
             </tr>
             <tr>
-              <td class="label">项目成果</td>
-              <td>${data.project_result || '/'}</td>
-            </tr>
-            <tr>
               <td class="label">工作职责理解</td>
               <td>${data.job_duty || '/'}</td>
             </tr>

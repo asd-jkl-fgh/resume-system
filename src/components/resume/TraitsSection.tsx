@@ -84,24 +84,6 @@ export function TraitsSection({ form }: TraitsSectionProps) {
 
         <FormField
           control={form.control}
-          name="project_result"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>项目成果（请量化您的成果）</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="例如：提升加载速度50%、降低系统故障率30%..."
-                  className="min-h-[80px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="job_duty"
           render={({ field }) => (
             <FormItem>

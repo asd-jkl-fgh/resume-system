@@ -76,7 +76,6 @@ const resumeSchema = z.object({
   character: z.string().min(1, "请填写性格特点"),
   speciality: z.string().min(1, "请填写特长"),
   project_detail: z.string().min(1, "请填写项目经历"),
-  project_result: z.string().min(1, "请填写项目成果"),
   job_duty: z.string().min(1, "请填写工作职责理解"),
   plan: z.string().min(1, "请填写职业规划"),
   
