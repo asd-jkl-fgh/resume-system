@@ -29,13 +29,6 @@ export interface FamilyInfo {
   age: string;
 }
 
-export interface IncompanyDetail {
-  id: string;
-  name: string;
-  work: string;
-  relation: string;
-}
-
 export interface ResumeData {
   // 应聘渠道
   channel_type: string; // 网络渠道/内部推荐/其他渠道
@@ -93,9 +86,6 @@ export interface ResumeData {
   // 家庭信息
   family_info: FamilyInfo[];
   
-  // 本公司亲友
-  incompany_detail: IncompanyDetail[];
-  
   // 其他信息
   hobby: string;
   health: string;
@@ -139,7 +129,6 @@ export const initialResumeData: ResumeData = {
   job_duty: '',
   plan: '',
   family_info: [],
-  incompany_detail: [],
   hobby: '',
   health: '',
   criminal: '',

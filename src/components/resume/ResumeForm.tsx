@@ -13,7 +13,6 @@ import { PersonalSection } from "./PersonalSection";
 import { EducationSection } from "./EducationSection";
 import { CareerSection } from "./CareerSection";
 import { FamilySection } from "./FamilySection";
-import { IncompanySection } from "./IncompanySection";
 import { TraitsSection } from "./TraitsSection";
 import { useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -89,14 +88,6 @@ const resumeSchema = z.object({
     work: z.string().min(1, "请填写职位"),
     age: z.string().min(1, "请填写年龄"),
   })).min(1, "请至少填写1条家庭信息"),
-  
-  // 本公司亲友
-  incompany_detail: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    work: z.string(),
-    relation: z.string(),
-  })),
   
   // 其他信息
   hobby: z.string().min(1, "请填写兴趣爱好"),
@@ -220,9 +211,6 @@ export function ResumeForm() {
 
         {/* 家庭信息 */}
         <FamilySection form={form} />
-
-        {/* 本公司亲友 */}
-        <IncompanySection form={form} />
 
         {/* 声明 */}
         <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">

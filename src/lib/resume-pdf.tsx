@@ -57,14 +57,6 @@ function generateResumeHTML(data: ResumeData): string {
     </tr>`
   ).join('') || '<tr><td colspan="5" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
 
-  const incompany = data.incompany_detail?.map(i => 
-    `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${i.name || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${i.work || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${i.relation || '/'}</td>
-    </tr>`
-  ).join('') || '<tr><td colspan="3" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
-
   return `
     <!DOCTYPE html>
     <html>
@@ -308,19 +300,7 @@ function generateResumeHTML(data: ResumeData): string {
         </div>
 
         <div class="section">
-          <div class="section-title">七、本公司亲友</div>
-          <table>
-            <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">姓名</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">所在部门/岗位</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">与本人关系</td>
-            </tr>
-            ${incompany}
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">八、其他信息</div>
+          <div class="section-title">七、其他信息</div>
           <table>
             <tr>
               <td class="label">兴趣爱好</td>

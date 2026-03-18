@@ -108,13 +108,6 @@ async function sendToFeishuBitable(resumeData: ResumeData): Promise<void> {
         .join('\n');
     }
 
-    // 添加亲友信息
-    if (resumeData.incompany_detail.length > 0) {
-      fields['本公司亲友'] = resumeData.incompany_detail
-        .map((friend) => `${friend.name} ${friend.work} ${friend.relation}`)
-        .join('\n');
-    }
-
     await fetch(
       `https://open.feishu.cn/open-apis/bitable/v1/apps/${bitableToken}/tables/${tableId}/records`,
       {
