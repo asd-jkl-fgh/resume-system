@@ -87,15 +87,17 @@ function generateResumeHTML(data: ResumeData): string {
         .header { 
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
           margin-bottom: 3mm; 
           border-bottom: 2px solid #333; 
           padding-bottom: 2mm;
         }
-        .header img { height: 25px; margin-right: 15px; margin-left: 0; }
-        .header-title { text-align: center; }
+        .header-left { display: flex; align-items: center; }
+        .header img { height: 25px; }
+        .header-title { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
         .header h1 { font-size: 18pt; margin-bottom: 3px; }
         .header p { color: #666; font-size: 9pt; }
+        .header-right { width: 80px; }
         
         .section { margin-bottom: 4mm; }
         .section-title { 
@@ -158,11 +160,14 @@ function generateResumeHTML(data: ResumeData): string {
       <!-- 第一页 -->
       <div class="page">
         <div class="header">
-          <img src="https://f5b50e9c-b63f-45e9-a8a2-798a53ef13f7.dev.coze.site/logo.png" alt="EVOLUTICAN" />
+          <div class="header-left">
+            <img src="https://f5b50e9c-b63f-45e9-a8a2-798a53ef13f7.dev.coze.site/logo.png" alt="EVOLUTICAN" />
+          </div>
           <div class="header-title">
             <h1>应聘人员信息登记表</h1>
             <p>提交时间：${new Date().toLocaleString('zh-CN')}</p>
           </div>
+          <div class="header-right"></div>
         </div>
 
         <div class="section">
