@@ -83,26 +83,30 @@ function generateResumeHTML(data: ResumeData): string {
         .page:last-child { page-break-after: auto; }
         
         .header { 
-          text-align: center; 
-          margin-bottom: 8mm; 
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 5mm; 
           border-bottom: 2px solid #333; 
-          padding-bottom: 5mm;
+          padding-bottom: 3mm;
         }
+        .header img { height: 25px; margin-right: 15px; }
+        .header-title { text-align: center; }
         .header h1 { font-size: 18pt; margin-bottom: 3px; }
         .header p { color: #666; font-size: 9pt; }
         
-        .section { margin-bottom: 6mm; }
+        .section { margin-bottom: 4mm; }
         .section-title { 
           font-size: 11pt; 
           font-weight: bold; 
           background: #e6e6e6; 
-          padding: 3px 6px; 
-          margin-bottom: 4px;
+          padding: 2px 6px; 
+          margin-bottom: 3px;
           border-left: 3px solid #1890ff;
         }
         
-        table { width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 9pt; }
-        td { padding: 2px 4px; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9pt; }
+        td { padding: 1px 3px; border: 1px solid #333; }
         td.label { width: 28mm; background: #f5f5f5; font-weight: 500; }
         td.label2 { width: 22mm; background: #f5f5f5; font-weight: 500; }
         td.label3 { width: 18mm; background: #f5f5f5; font-weight: 500; }
@@ -152,8 +156,11 @@ function generateResumeHTML(data: ResumeData): string {
       <!-- 第一页 -->
       <div class="page">
         <div class="header">
-          <h1>应聘人员信息登记表</h1>
-          <p>提交时间：${new Date().toLocaleString('zh-CN')}</p>
+          <img src="https://f5b50e9c-b63f-45e9-a8a2-798a53ef13f7.dev.coze.site/logo.png" alt="EVOLUTICAN" />
+          <div class="header-title">
+            <h1>应聘人员信息登记表</h1>
+            <p>提交时间：${new Date().toLocaleString('zh-CN')}</p>
+          </div>
         </div>
 
         <div class="section">
