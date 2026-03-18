@@ -271,7 +271,7 @@ function generateResumeHTML(data: ResumeData): string {
               <td>${data.speciality || '/'}</td>
             </tr>
             <tr>
-              <td class="label">项目经历</td>
+              <td class="label">最有价值的项目和自我收获</td>
               <td>${data.project_detail || '/'}</td>
             </tr>
             <tr>
