@@ -230,10 +230,10 @@ export function ResumeForm() {
               htmlFor="declaration"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              信息真实性声明
+              个人资料保障声明
             </label>
             <p className="text-sm text-gray-500">
-              本人声明：以上填写的信息真实、准确、完整。如有虚假，愿承担相应责任。
+              本人已经明白及接受上述之个人资料保障原则。同时，有关本人在求职申请表上所填写之一切均真实及正确。在必要时同意授权上海进化时代营销策划有限公司对上述信息进行核实确认。一旦以上任意陈述被发现不实或本人蓄意隐瞒相关事实，公司有权立即解除劳动关系并不给予任何经济补偿。
             </p>
             {form.formState.errors.declaration && (
               <p className="text-sm text-red-500">
