@@ -27,61 +27,91 @@ const resumeSchema = z.object({
   
   // 应聘信息
   post: z.string().min(1, "请输入应聘岗位"),
-  entry_date: z.string(),
+  entry_date: z.string().min(1, "请填写预计到岗时间"),
   job_type: z.string().min(1, "请选择岗位性质"),
   current_status: z.string().min(1, "请选择当前状态"),
   current_status_other: z.string(),
-  current_salary: z.string(),
+  current_salary: z.string().min(1, "请填写目前月薪"),
   salary_expectation: z.string().min(1, "请输入期望月薪"),
   
   // 个人资料
   name: z.string().min(1, "请输入姓名"),
-  name_en: z.string(),
+  name_en: z.string().min(1, "请输入英文名"),
   sex: z.string().min(1, "请选择性别"),
   birthday: z.string().min(1, "请选择出生日期"),
-  school: z.string(),
-  degree: z.string(),
-  household_address: z.string(),
+  school: z.string().min(1, "请填写毕业院校"),
+  degree: z.string().min(1, "请填写最高学历/专业"),
+  household_address: z.string().min(1, "请填写户籍地"),
   mobilephone: z.string().min(11, "请输入正确的手机号码"),
   email: z.string().email("请输入正确的邮箱地址"),
-  marriage: z.string(),
-  living_address: z.string(),
-  has_disease: z.string(),
-  has_dispute: z.string(),
-  has_criminal: z.string(),
+  marriage: z.string().min(1, "请选择婚姻状况"),
+  living_address: z.string().min(1, "请填写现居住地址"),
+  has_disease: z.string().min(1, "请选择是否曾患重大疾病"),
+  has_dispute: z.string().min(1, "请选择是否曾发生劳动纠纷"),
+  has_criminal: z.string().min(1, "请选择是否有犯罪记录"),
   
   // 教育经历
-  education_detail: z.array(z.any()),
+  education_detail: z.array(z.object({
+    id: z.string(),
+    start: z.string().min(1, "请填写开始时间"),
+    end: z.string().min(1, "请填写结束时间"),
+    school: z.string().min(1, "请填写学校名称"),
+    major: z.string().min(1, "请填写专业"),
+    degree: z.string().min(1, "请填写学历"),
+    certificate: z.string().min(1, "请填写证书/学位"),
+  })).min(1, "请至少填写1条教育经历"),
   
   // 工作经历
-  career_detail: z.array(z.any()),
+  career_detail: z.array(z.object({
+    id: z.string(),
+    start: z.string().min(1, "请填写开始时间"),
+    end: z.string().min(1, "请填写结束时间"),
+    company: z.string().min(1, "请填写公司名称"),
+    department: z.string().min(1, "请填写部门"),
+    job: z.string().min(1, "请填写职位"),
+    salary: z.string().min(1, "请填写薪资"),
+    reason: z.string().min(1, "请填写离职原因"),
+    reference: z.string().min(1, "请填写证明人及联系方式"),
+  })).min(1, "请至少填写1条工作经历"),
   
   // 个人特质
-  character: z.string(),
-  speciality: z.string(),
-  project_detail: z.string(),
-  job_duty: z.string(),
-  plan: z.string(),
+  character: z.string().min(1, "请填写性格特点"),
+  speciality: z.string().min(1, "请填写特长"),
+  project_detail: z.string().min(1, "请填写项目经历"),
+  job_duty: z.string().min(1, "请填写工作职责理解"),
+  plan: z.string().min(1, "请填写职业规划"),
   
   // 家庭信息
-  family_info: z.array(z.any()),
+  family_info: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1, "请填写姓名"),
+    relation: z.string().min(1, "请填写关系"),
+    organ: z.string().min(1, "请填写工作单位"),
+    work: z.string().min(1, "请填写职位"),
+    age: z.string().min(1, "请填写年龄"),
+  })).min(1, "请至少填写1条家庭信息"),
   
   // 本公司亲友
-  incompany_detail: z.array(z.any()),
-  
-  // 紧急联系人（至少2位）
-  emergency_contacts: z.array(z.object({
+  incompany_detail: z.array(z.object({
     id: z.string(),
     name: z.string(),
+    work: z.string(),
     relation: z.string(),
-    mobilephone: z.string(),
+  })),
+  
+  // 紧急联系人
+  emergency_contacts: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1, "请填写联系人姓名"),
+    relation: z.string().min(1, "请填写关系"),
+    mobilephone: z.string().min(11, "请填写手机号码"),
   })).min(2, "请至少添加2位紧急联系人"),
   
   // 其他信息
-  hobby: z.string(),
-  health: z.string(),
-  criminal: z.string(),
-  other: z.string(),
+  hobby: z.string().min(1, "请填写兴趣爱好"),
+  health: z.string().min(1, "请填写健康状况"),
+  criminal: z.string().min(1, "请填写是否有犯罪记录"),
+  other: z.string().min(1, "请填写其他说明"),
   
   // 声明
   declaration: z.boolean().refine((val) => val === true, {
@@ -136,16 +166,41 @@ export function ResumeForm() {
     const errorMessages: string[] = [];
     
     if (errors.channel_type) errorMessages.push("请选择应聘渠道");
+    if (errors.channel_referrer) errorMessages.push("请填写推荐人");
+    if (errors.channel_other) errorMessages.push("请填写其他渠道");
     if (errors.post) errorMessages.push("请输入应聘岗位");
+    if (errors.entry_date) errorMessages.push("请填写预计到岗时间");
     if (errors.job_type) errorMessages.push("请选择岗位性质");
     if (errors.current_status) errorMessages.push("请选择当前状态");
+    if (errors.current_salary) errorMessages.push("请填写目前月薪");
     if (errors.salary_expectation) errorMessages.push("请输入期望月薪");
     if (errors.name) errorMessages.push("请输入姓名");
+    if (errors.name_en) errorMessages.push("请输入英文名");
     if (errors.sex) errorMessages.push("请选择性别");
     if (errors.birthday) errorMessages.push("请选择出生日期");
+    if (errors.school) errorMessages.push("请填写毕业院校");
+    if (errors.degree) errorMessages.push("请填写学历/专业");
+    if (errors.household_address) errorMessages.push("请填写户籍地");
     if (errors.mobilephone) errorMessages.push("请输入正确的手机号码");
     if (errors.email) errorMessages.push("请输入正确的邮箱地址");
+    if (errors.marriage) errorMessages.push("请选择婚姻状况");
+    if (errors.living_address) errorMessages.push("请填写现居住地址");
+    if (errors.has_disease) errorMessages.push("请选择健康状况");
+    if (errors.has_dispute) errorMessages.push("请选择劳动纠纷情况");
+    if (errors.has_criminal) errorMessages.push("请选择犯罪记录情况");
+    if (errors.education_detail) errorMessages.push("请至少填写1条教育经历");
+    if (errors.career_detail) errorMessages.push("请至少填写1条工作经历");
+    if (errors.character) errorMessages.push("请填写性格特点");
+    if (errors.speciality) errorMessages.push("请填写特长");
+    if (errors.project_detail) errorMessages.push("请填写项目经历");
+    if (errors.job_duty) errorMessages.push("请填写工作职责");
+    if (errors.plan) errorMessages.push("请填写职业规划");
+    if (errors.family_info) errorMessages.push("请至少填写1条家庭信息");
     if (errors.emergency_contacts) errorMessages.push("请至少添加2位紧急联系人");
+    if (errors.hobby) errorMessages.push("请填写兴趣爱好");
+    if (errors.health) errorMessages.push("请填写健康状况");
+    if (errors.criminal) errorMessages.push("请填写犯罪记录");
+    if (errors.other) errorMessages.push("请填写其他说明");
     if (errors.declaration) errorMessages.push("请勾选信息真实性声明");
     
     toast.error("表单验证失败", {
