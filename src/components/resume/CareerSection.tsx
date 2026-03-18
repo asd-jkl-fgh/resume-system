@@ -47,6 +47,7 @@ export function CareerSection({ form }: CareerSectionProps) {
       job: "",
       salary: "",
       reason: "",
+      reference: "",
     });
     setDialogOpen(true);
   };
@@ -82,6 +83,7 @@ export function CareerSection({ form }: CareerSectionProps) {
                 <TableHead>职务</TableHead>
                 <TableHead>薪资/津贴</TableHead>
                 <TableHead>离职原因</TableHead>
+                <TableHead>证明人职务及联系方式</TableHead>
                 <TableHead className="w-16">操作</TableHead>
               </TableRow>
             </TableHeader>
@@ -98,6 +100,7 @@ export function CareerSection({ form }: CareerSectionProps) {
                   <TableCell>{form.getValues(`career_detail.${index}.job`)}</TableCell>
                   <TableCell>{form.getValues(`career_detail.${index}.salary`)}</TableCell>
                   <TableCell>{form.getValues(`career_detail.${index}.reason`)}</TableCell>
+                  <TableCell>{form.getValues(`career_detail.${index}.reference`)}</TableCell>
                   <TableCell>
                     <Button
                       type="button"
@@ -191,6 +194,16 @@ export function CareerSection({ form }: CareerSectionProps) {
                   setCurrentCareer({ ...currentCareer, reason: e.target.value })
                 }
                 placeholder="请输入离职原因"
+              />
+            </div>
+            <div className="col-span-2">
+              <FormLabel>证明人职务及联系方式</FormLabel>
+              <Input
+                value={currentCareer.reference || ""}
+                onChange={(e) =>
+                  setCurrentCareer({ ...currentCareer, reference: e.target.value })
+                }
+                placeholder="如：张经理 13800138000"
               />
             </div>
           </div>

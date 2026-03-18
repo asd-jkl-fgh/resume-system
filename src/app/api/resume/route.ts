@@ -111,7 +111,7 @@ async function sendToFeishu(resumeData: ResumeData): Promise<void> {
   // 添加工作经历（转为文本）
   if (resumeData.career_detail.length > 0) {
     fields['工作经历'] = resumeData.career_detail
-      .map((work) => `${work.start}~${work.end} ${work.company} ${work.department} ${work.job}`)
+      .map((work) => `${work.start}~${work.end} ${work.company} ${work.department} ${work.job} 证明人:${work.reference || '无'}`)
       .join('\n');
   }
 

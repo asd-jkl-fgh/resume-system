@@ -17,6 +17,7 @@ export interface CareerDetail {
   job: string;
   salary: string;
   reason: string;
+  reference: string; // 证明人职务及联系方式
 }
 
 export interface FamilyInfo {
