@@ -25,7 +25,7 @@ export default function Home() {
 
         {/* 页脚 */}
         <div className="text-center mt-8 text-sm text-gray-500 dark:text-gray-400">
-          <p>© 2024 招聘系统 - 人力资源部</p>
+          <p>招聘系统-EVO</p>
         </div>
       </div>
     </div>
