@@ -89,11 +89,11 @@ const resumeSchema = z.object({
     age: z.string().min(1, "请填写年龄"),
   })).min(1, "请至少填写1条家庭信息"),
   
-  // 其他信息
-  hobby: z.string().min(1, "请填写兴趣爱好"),
-  health: z.string().min(1, "请填写健康状况"),
-  criminal: z.string().min(1, "请填写是否有犯罪记录"),
-  other: z.string().min(1, "请填写其他说明"),
+  // 其他信息（选填）
+  hobby: z.string(),
+  health: z.string(),
+  criminal: z.string(),
+  other: z.string(),
   
   // 声明
   declaration: z.boolean().refine((val) => val === true, {
