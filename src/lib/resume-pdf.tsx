@@ -75,7 +75,6 @@ function generateResumeHTML(data: ResumeData): string {
         }
         .page { 
           width: 190mm; 
-          min-height: 277mm; 
           padding: 8mm; 
           background: white;
         }
@@ -259,10 +258,7 @@ function generateResumeHTML(data: ResumeData): string {
             ${career}
           </table>
         </div>
-      </div>
 
-      <!-- 第二页 -->
-      <div class="page">
         <div class="section">
           <div class="section-title">五、个人特质</div>
           <table>
@@ -342,7 +338,6 @@ function generateResumeHTML(data: ResumeData): string {
             <span class="sign-line">　</span>
           </div>
         </div>
-      </div>
     </body>
     </html>
   `;
