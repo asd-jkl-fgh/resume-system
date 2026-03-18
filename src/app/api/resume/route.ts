@@ -54,42 +54,49 @@ async function sendToFeishu(resumeData: ResumeData): Promise<void> {
 
   // 构建多维表格记录
   const fields: Record<string, any> = {
-    '姓名': resumeData.name,
-    '性别': resumeData.sex,
-    '民族': resumeData.nation,
-    '出生年月': resumeData.birthday,
-    '血型': resumeData.bloodtype,
-    '身高': resumeData.height,
-    '婚姻状况': resumeData.marriage,
-    '生育状况': resumeData.birth_status,
-    '手机号码': resumeData.mobilephone,
-    '固定电话': resumeData.telephone,
-    '现住地址': resumeData.living_address,
-    '户籍地址': resumeData.household_address,
-    '户籍性质': resumeData.household_type,
-    '英语等级': resumeData.english_level,
-    '英语听说能力': resumeData.english_read,
-    '英语读写能力': resumeData.english_write,
-    '其他语种': resumeData.other_language,
-    '其他语种听说能力': resumeData.language_read,
-    '其他语种读写能力': resumeData.language_write,
-    '最高学历': resumeData.degree,
+    // 应聘渠道
+    '应聘渠道': resumeData.channel_type,
+    '推荐人': resumeData.channel_referrer,
+    '其他渠道说明': resumeData.channel_other,
+    
+    // 应聘信息
     '应聘岗位': resumeData.post,
+    '预计到岗时间': resumeData.entry_date,
+    '岗位性质': resumeData.job_type,
+    '当前状态': resumeData.current_status === '其他' ? resumeData.current_status_other : resumeData.current_status,
+    '目前月薪': resumeData.current_salary,
     '期望月薪': resumeData.salary_expectation,
-    '最早到岗时间': resumeData.entry_expectation,
-    '岗位意愿一': resumeData.job_expectation_1,
-    '岗位意愿二': resumeData.job_expectation_2,
+    
+    // 个人资料
+    '姓名（中文）': resumeData.name,
+    '姓名（英文）': resumeData.name_en,
+    '性别': resumeData.sex,
+    '出生日期': resumeData.birthday,
+    '毕业院校': resumeData.school,
+    '最高学历/专业': resumeData.degree,
+    '户籍地': resumeData.household_address,
+    '手机': resumeData.mobilephone,
+    '电子邮件': resumeData.email,
+    '婚姻状况': resumeData.marriage,
+    '现居住地址': resumeData.living_address,
+    '是否曾患重大疾病': resumeData.has_disease,
+    '是否曾发生劳动纠纷': resumeData.has_dispute,
+    '是否曾被判刑或拘留': resumeData.has_criminal,
+    
+    // 个人特质
     '性格特点': resumeData.character,
     '特长': resumeData.speciality,
     '项目经历': resumeData.project_detail,
     '工作职责理解': resumeData.job_duty,
     '职业规划': resumeData.plan,
+    
+    // 紧急联系人
     '紧急联系人': resumeData.emergency_name,
     '紧急联系人关系': resumeData.emergency_relation,
     '紧急联系人电话': resumeData.emergency_mobilephone,
+    
+    // 其他信息
     '兴趣爱好': resumeData.hobby,
-    '健康状况': resumeData.health,
-    '犯罪记录': resumeData.criminal,
     '其他说明': resumeData.other,
     '提交时间': new Date().toLocaleString('zh-CN'),
   };
@@ -149,10 +156,12 @@ export async function POST(request: NextRequest) {
     const resumeData: ResumeData = await request.json();
 
     // 验证必填字段
-    if (!resumeData.name || !resumeData.sex || !resumeData.mobilephone || 
-        !resumeData.degree || !resumeData.post || !resumeData.emergency_name ||
-        !resumeData.emergency_relation || !resumeData.emergency_mobilephone ||
-        !resumeData.declaration) {
+    if (!resumeData.channel_type || !resumeData.post || !resumeData.job_type ||
+        !resumeData.current_status || !resumeData.salary_expectation ||
+        !resumeData.name || !resumeData.sex || !resumeData.birthday ||
+        !resumeData.mobilephone || !resumeData.email ||
+        !resumeData.emergency_name || !resumeData.emergency_relation ||
+        !resumeData.emergency_mobilephone || !resumeData.declaration) {
       return NextResponse.json(
         { success: false, error: '请填写所有必填字段' },
         { status: 400 }

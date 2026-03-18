@@ -36,41 +36,45 @@ export interface IncompanyDetail {
 }
 
 export interface ResumeData {
-  // 基本信息
-  name: string;
-  sex: string;
-  nation: string;
-  birthday: string;
-  bloodtype: string;
-  height: string;
-  marriage: string;
-  birth_status: string;
+  // 应聘渠道
+  channel_type: string; // 网络渠道/内部推荐/其他渠道
+  channel_referrer: string; // 推荐人姓名
+  channel_other: string; // 其他渠道说明
+  
+  // 应聘信息
+  post: string; // 应聘岗位
+  entry_date: string; // 预计到岗时间
+  job_type: string; // 岗位性质（全职/兼职）
+  current_status: string; // 当前状态（在职/离职/应届生/其他）
+  current_status_other: string; // 当前状态其他说明
+  current_salary: string; // 目前月薪
+  salary_expectation: string; // 期望月薪
+  
+  // 个人资料
+  name: string; // 姓名（中文）
+  name_en: string; // 姓名（英文）
+  sex: string; // 性别
+  birthday: string; // 出生日期
+  
+  // 学历信息
+  school: string; // 毕业院校
+  degree: string; // 最高学历/专业
   
   // 联系方式
-  mobilephone: string;
-  telephone: string;
+  household_address: string; // 户籍地
+  mobilephone: string; // 手机
+  email: string; // 电子邮件
   
-  // 住址籍贯
-  living_address: string;
-  household_address: string;
-  household_type: string;
+  // 婚姻状况
+  marriage: string; // 未婚/已婚未育/已婚已育/其他
   
-  // 头像
-  avatar: string;
+  // 地址
+  living_address: string; // 现居住地址及邮政编码
   
-  // 个人信息
-  english_level: string;
-  english_read: string;
-  english_write: string;
-  other_language: string;
-  language_read: string;
-  language_write: string;
-  degree: string;
-  post: string;
-  salary_expectation: string;
-  entry_expectation: string;
-  job_expectation_1: string;
-  job_expectation_2: string;
+  // 健康和法律状况
+  has_disease: string; // 是否曾患重大疾病
+  has_dispute: string; // 是否曾发生劳动纠纷
+  has_criminal: string; // 是否曾被判刑或拘留
   
   // 教育经历
   education_detail: EducationDetail[];
@@ -107,32 +111,30 @@ export interface ResumeData {
 }
 
 export const initialResumeData: ResumeData = {
-  name: '',
-  sex: '',
-  nation: '',
-  birthday: '',
-  bloodtype: '',
-  height: '',
-  marriage: '',
-  birth_status: '',
-  mobilephone: '',
-  telephone: '',
-  living_address: '',
-  household_address: '',
-  household_type: '',
-  avatar: '',
-  english_level: '',
-  english_read: '',
-  english_write: '',
-  other_language: '',
-  language_read: '',
-  language_write: '',
-  degree: '',
+  channel_type: '',
+  channel_referrer: '',
+  channel_other: '',
   post: '',
+  entry_date: '',
+  job_type: '',
+  current_status: '',
+  current_status_other: '',
+  current_salary: '',
   salary_expectation: '',
-  entry_expectation: '',
-  job_expectation_1: '',
-  job_expectation_2: '',
+  name: '',
+  name_en: '',
+  sex: '',
+  birthday: '',
+  school: '',
+  degree: '',
+  household_address: '',
+  mobilephone: '',
+  email: '',
+  marriage: '',
+  living_address: '',
+  has_disease: '',
+  has_dispute: '',
+  has_criminal: '',
   education_detail: [],
   career_detail: [],
   character: '',
