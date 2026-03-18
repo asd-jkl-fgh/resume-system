@@ -36,13 +36,6 @@ export interface IncompanyDetail {
   relation: string;
 }
 
-export interface EmergencyContact {
-  id: string;
-  name: string;
-  relation: string;
-  mobilephone: string;
-}
-
 export interface ResumeData {
   // 应聘渠道
   channel_type: string; // 网络渠道/内部推荐/其他渠道
@@ -103,9 +96,6 @@ export interface ResumeData {
   // 本公司亲友
   incompany_detail: IncompanyDetail[];
   
-  // 紧急联系人
-  emergency_contacts: EmergencyContact[];
-  
   // 其他信息
   hobby: string;
   health: string;
@@ -150,7 +140,6 @@ export const initialResumeData: ResumeData = {
   plan: '',
   family_info: [],
   incompany_detail: [],
-  emergency_contacts: [],
   hobby: '',
   health: '',
   criminal: '',

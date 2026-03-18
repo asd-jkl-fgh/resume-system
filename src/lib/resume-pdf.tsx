@@ -65,15 +65,6 @@ function generateResumeHTML(data: ResumeData): string {
     </tr>`
   ).join('') || '<tr><td colspan="3" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
 
-  const emergencyContacts = data.emergency_contacts?.map((c, i) => 
-    `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${i + 1}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${c.name || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${c.relation || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${c.mobilephone || '/'}</td>
-    </tr>`
-  ).join('') || '';
-
   return `
     <!DOCTYPE html>
     <html>
@@ -183,16 +174,16 @@ function generateResumeHTML(data: ResumeData): string {
               <td>${data.post || '/'}</td>
             </tr>
             <tr>
-              <td class="label">岗位性质</td>
-              <td>${data.job_type || '/'}</td>
               <td class="label">预计到岗时间</td>
               <td>${data.entry_date || '/'}</td>
+              <td class="label">岗位性质</td>
+              <td>${data.job_type || '/'}</td>
             </tr>
             <tr>
               <td class="label">当前状态</td>
               <td>${data.current_status === '其他' ? data.current_status_other : data.current_status || '/'}</td>
-              <td class="label">期望月薪</td>
-              <td>${data.salary_expectation || '/'}</td>
+              <td class="label">目前/期望月薪</td>
+              <td>${data.current_salary || '/'} / ${data.salary_expectation || '/'}</td>
             </tr>
           </table>
         </div>
@@ -229,12 +220,8 @@ function generateResumeHTML(data: ResumeData): string {
             <tr>
               <td class="label">户籍地</td>
               <td>${data.household_address || '/'}</td>
-              <td class="label">目前月薪</td>
-              <td colspan="3">${data.current_salary || '/'}</td>
-            </tr>
-            <tr>
               <td class="label">现居住地址</td>
-              <td colspan="5">${data.living_address || '/'}</td>
+              <td colspan="3">${data.living_address || '/'}</td>
             </tr>
             <tr>
               <td class="label">是否曾患重大疾病</td>
@@ -333,20 +320,7 @@ function generateResumeHTML(data: ResumeData): string {
         </div>
 
         <div class="section">
-          <div class="section-title">八、紧急联系人</div>
-          <table>
-            <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; width: 15mm;">序号</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">姓名</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">关系</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">手机号码</td>
-            </tr>
-            ${emergencyContacts}
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">九、其他信息</div>
+          <div class="section-title">八、其他信息</div>
           <table>
             <tr>
               <td class="label">兴趣爱好</td>
@@ -395,7 +369,6 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
   let browser = null;
   
   try {
-    // 启动无头浏览器
     const args = [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -411,22 +384,11 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
     });
 
     const page = await browser.newPage();
-    
-    // 设置视口大小 (A4 尺寸)
-    await page.setViewport({
-      width: 794,
-      height: 1123
-    });
+    await page.setViewport({ width: 794, height: 1123 });
 
-    // 生成 HTML 内容
     const html = generateResumeHTML(data);
-    
-    // 设置页面内容
-    await page.setContent(html, {
-      waitUntil: 'networkidle0'
-    });
+    await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    // 生成 PDF - 禁用自动分页，使用HTML中的page-break-after
     const pdfUint8Array = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -438,21 +400,14 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
       }
     });
 
-    // 转换为 Buffer
     const pdfBuffer = Buffer.from(pdfUint8Array);
-
-    // 关闭浏览器
     await browser.close();
 
-    // 生成文件名
     const timestamp = Date.now();
     const sanitizedName = (data.name || 'Unknown').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
     const filename = `Resume_${sanitizedName}_${timestamp}.pdf`;
     
-    // 保存到 public 目录
     const publicDir = path.join(process.cwd(), 'public', 'resumes');
-    
-    // 确保目录存在
     if (!fs.existsSync(publicDir)) {
       fs.mkdirSync(publicDir, { recursive: true });
     }
@@ -470,29 +425,18 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
   }
 }
 
-// 获取 PDF 下载 URL
 export function getPDFDownloadUrl(filename: string): string {
   const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
   return `${domain}/resumes/${filename}`;
 }
 
-// 发送消息到飞书 Webhook
 export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Promise<void> {
-  const emergencyContacts = data.emergency_contacts?.map((c, i) => 
-    `联系人${i + 1}: ${c.name}(${c.relation}) ${c.mobilephone}`
-  ).join('\n') || '未填写';
-
   const message = {
     msg_type: 'interactive',
     card: {
-      config: {
-        wide_screen_mode: true
-      },
+      config: { wide_screen_mode: true },
       header: {
-        title: {
-          tag: 'plain_text',
-          content: '📋 新简历提交通知'
-        },
+        title: { tag: 'plain_text', content: '📋 新简历提交通知' },
         template: 'blue'
       },
       elements: [
@@ -503,9 +447,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
             content: `**【基本信息】**\n**姓名：**${data.name || '/'}\n**应聘岗位：**${data.post || '/'}\n**性别：**${data.sex || '/'} | **出生日期：**${data.birthday || '/'}`
           }
         },
-        {
-          tag: 'hr'
-        },
+        { tag: 'hr' },
         {
           tag: 'div',
           text: {
@@ -513,19 +455,15 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
             content: `**【联系方式】**\n**手机：**${data.mobilephone || '/'}\n**邮箱：**${data.email || '/'}`
           }
         },
-        {
-          tag: 'hr'
-        },
+        { tag: 'hr' },
         {
           tag: 'div',
           text: {
             tag: 'lark_md',
-            content: `**【应聘信息】**\n**应聘渠道：**${data.channel_type || '/'}${data.channel_referrer ? `（推荐人：${data.channel_referrer}）` : ''}\n**岗位性质：**${data.job_type || '/'}\n**当前状态：**${data.current_status === '其他' ? data.current_status_other : data.current_status || '/'}\n**期望月薪：**${data.salary_expectation || '/'}`
+            content: `**【应聘信息】**\n**应聘渠道：**${data.channel_type || '/'}${data.channel_referrer ? `（推荐人：${data.channel_referrer}）` : ''}\n**岗位性质：**${data.job_type || '/'}\n**当前状态：**${data.current_status === '其他' ? data.current_status_other : data.current_status || '/'}\n**薪资：**${data.current_salary || '/'} / ${data.salary_expectation || '/'}`
           }
         },
-        {
-          tag: 'hr'
-        },
+        { tag: 'hr' },
         {
           tag: 'div',
           text: {
@@ -533,28 +471,13 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
             content: `**【学历背景】**\n${data.school || '/'} | ${data.degree || '/'}`
           }
         },
-        {
-          tag: 'hr'
-        },
-        {
-          tag: 'div',
-          text: {
-            tag: 'lark_md',
-            content: `**【紧急联系人】**\n${emergencyContacts}`
-          }
-        },
-        {
-          tag: 'hr'
-        },
+        { tag: 'hr' },
         {
           tag: 'action',
           actions: [
             {
               tag: 'button',
-              text: {
-                tag: 'plain_text',
-                content: '📥 下载PDF简历'
-              },
+              text: { tag: 'plain_text', content: '📥 下载PDF简历' },
               type: 'primary',
               url: pdfUrl
             }
@@ -563,10 +486,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
         {
           tag: 'note',
           elements: [
-            {
-              tag: 'plain_text',
-              content: `提交时间：${new Date().toLocaleString('zh-CN')}`
-            }
+            { tag: 'plain_text', content: `提交时间：${new Date().toLocaleString('zh-CN')}` }
           ]
         }
       ]
@@ -576,19 +496,15 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
   try {
     const response = await fetch(FEISHU_WEBHOOK_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(message),
     });
 
     const result = await response.json();
-    
     if (result.code !== 0) {
       console.error('飞书 Webhook 发送失败:', result);
       throw new Error(`飞书消息发送失败: ${result.msg || '未知错误'}`);
     }
-    
     console.log('飞书消息发送成功');
   } catch (error) {
     console.error('发送飞书消息时出错:', error);
@@ -596,7 +512,6 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
   }
 }
 
-// 主函数：生成 PDF 并发送通知
 export async function processResumeAndNotify(data: ResumeData): Promise<{ pdfUrl: string }> {
   const { filename } = await generatePDF(data);
   const pdfUrl = getPDFDownloadUrl(filename);

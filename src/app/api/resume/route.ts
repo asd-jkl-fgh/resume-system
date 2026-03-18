@@ -87,13 +87,6 @@ async function sendToFeishuBitable(resumeData: ResumeData): Promise<void> {
       '提交时间': new Date().toLocaleString('zh-CN'),
     };
 
-    // 添加紧急联系人
-    if (resumeData.emergency_contacts.length > 0) {
-      fields['紧急联系人'] = resumeData.emergency_contacts
-        .map((contact, index) => `联系人${index + 1}: ${contact.name}(${contact.relation}) ${contact.mobilephone}`)
-        .join('\n');
-    }
-
     // 添加教育经历
     if (resumeData.education_detail.length > 0) {
       fields['教育经历'] = resumeData.education_detail
@@ -147,10 +140,9 @@ export async function POST(request: NextRequest) {
         !resumeData.current_status || !resumeData.salary_expectation ||
         !resumeData.name || !resumeData.sex || !resumeData.birthday ||
         !resumeData.mobilephone || !resumeData.email ||
-        !resumeData.emergency_contacts || resumeData.emergency_contacts.length < 2 ||
         !resumeData.declaration) {
       return NextResponse.json(
-        { success: false, error: '请填写所有必填字段（包括至少2位紧急联系人）' },
+        { success: false, error: '请填写所有必填字段' },
         { status: 400 }
       );
     }

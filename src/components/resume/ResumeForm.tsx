@@ -15,7 +15,6 @@ import { CareerSection } from "./CareerSection";
 import { FamilySection } from "./FamilySection";
 import { IncompanySection } from "./IncompanySection";
 import { TraitsSection } from "./TraitsSection";
-import { EmergencySection } from "./EmergencySection";
 import { useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 
@@ -98,14 +97,6 @@ const resumeSchema = z.object({
     work: z.string(),
     relation: z.string(),
   })),
-  
-  // 紧急联系人
-  emergency_contacts: z.array(z.object({
-    id: z.string(),
-    name: z.string().min(1, "请填写联系人姓名"),
-    relation: z.string().min(1, "请填写关系"),
-    mobilephone: z.string().min(11, "请填写手机号码"),
-  })).min(2, "请至少添加2位紧急联系人"),
   
   // 其他信息
   hobby: z.string().min(1, "请填写兴趣爱好"),
@@ -196,7 +187,6 @@ export function ResumeForm() {
     if (errors.job_duty) errorMessages.push("请填写工作职责");
     if (errors.plan) errorMessages.push("请填写职业规划");
     if (errors.family_info) errorMessages.push("请至少填写1条家庭信息");
-    if (errors.emergency_contacts) errorMessages.push("请至少添加2位紧急联系人");
     if (errors.hobby) errorMessages.push("请填写兴趣爱好");
     if (errors.health) errorMessages.push("请填写健康状况");
     if (errors.criminal) errorMessages.push("请填写犯罪记录");
@@ -233,9 +223,6 @@ export function ResumeForm() {
 
         {/* 本公司亲友 */}
         <IncompanySection form={form} />
-
-        {/* 紧急联系人和其他信息 */}
-        <EmergencySection form={form} />
 
         {/* 声明 */}
         <div className="flex items-start space-x-2 p-4 bg-gray-50 rounded-lg">
