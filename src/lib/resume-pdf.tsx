@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 // 飞书 Webhook URL
-const FEISHU_WEBHOOK_URL = 'https://open.feishu.cn/open-apis/bot/v2/hook/60e7f51d-2a4d-456a-9b88-f74be41fb01a';
+const FEISHU_WEBHOOK_URL = 'https://open.feishu.cn/open-apis/bot/v2/hook/e39c0e09-3b64-4ce4-b01a-5049f108789b';
 
 // 生成 HTML 内容（优化排版到正反两页）
 function generateResumeHTML(data: ResumeData): string {
