@@ -16,7 +16,7 @@ export default function Home() {
           <img 
             src="/logo.png" 
             alt="EVOLUTICAN" 
-            className="h-10 w-auto"
+            className="h-8 w-auto"
           />
           {/* 标题 */}
           <div className="ml-6 flex-1 text-center">
@@ -28,7 +28,7 @@ export default function Home() {
             </p>
           </div>
           {/* 右侧占位保持对称 */}
-          <div className="h-10 w-40"></div>
+          <div className="h-8 w-40"></div>
         </div>
 
         {/* 表单内容 */}
