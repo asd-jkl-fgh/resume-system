@@ -80,6 +80,7 @@ export interface ResumeData {
   character: string;
   speciality: string;
   project_detail: string;
+  project_result: string;
   job_duty: string;
   plan: string;
   
@@ -126,6 +127,7 @@ export const initialResumeData: ResumeData = {
   character: '',
   speciality: '',
   project_detail: '',
+  project_result: '',
   job_duty: '',
   plan: '',
   family_info: [],
