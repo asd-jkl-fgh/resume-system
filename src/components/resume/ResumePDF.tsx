@@ -4,15 +4,27 @@ import {
   Text,
   View,
   StyleSheet,
+  Font,
 } from '@react-pdf/renderer';
 import { ResumeData } from '@/types/resume';
+
+// 注册中文字体 - 使用 Google Fonts Noto Sans SC
+Font.register({
+  family: 'NotoSansSC',
+  fonts: [
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kJo84MPvpLmixcA63oeALZTYKLgASIOQ.woff2',
+      fontWeight: 'normal',
+    },
+  ],
+});
 
 // 创建样式
 const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontSize: 10,
-    fontFamily: 'Helvetica',
+    fontFamily: 'NotoSansSC',
   },
   header: {
     textAlign: 'center',
