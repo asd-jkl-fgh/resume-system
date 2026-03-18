@@ -18,6 +18,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -120,6 +121,9 @@ export function EmergencySection({ form }: EmergencySectionProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>添加紧急联系人</DialogTitle>
+            <DialogDescription>
+              请填写紧急联系人的姓名、关系和手机号码
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <FormField

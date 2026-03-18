@@ -17,7 +17,7 @@ import { IncompanySection } from "./IncompanySection";
 import { TraitsSection } from "./TraitsSection";
 import { EmergencySection } from "./EmergencySection";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 const resumeSchema = z.object({
   // 应聘渠道
@@ -128,9 +128,36 @@ export function ResumeForm() {
     }
   };
 
+  // 处理表单验证错误
+  const onInvalid = (errors: any) => {
+    console.log("表单验证错误:", errors);
+    
+    // 收集所有错误信息
+    const errorMessages: string[] = [];
+    
+    if (errors.channel_type) errorMessages.push("请选择应聘渠道");
+    if (errors.post) errorMessages.push("请输入应聘岗位");
+    if (errors.job_type) errorMessages.push("请选择岗位性质");
+    if (errors.current_status) errorMessages.push("请选择当前状态");
+    if (errors.salary_expectation) errorMessages.push("请输入期望月薪");
+    if (errors.name) errorMessages.push("请输入姓名");
+    if (errors.sex) errorMessages.push("请选择性别");
+    if (errors.birthday) errorMessages.push("请选择出生日期");
+    if (errors.mobilephone) errorMessages.push("请输入正确的手机号码");
+    if (errors.email) errorMessages.push("请输入正确的邮箱地址");
+    if (errors.emergency_contacts) errorMessages.push("请至少添加2位紧急联系人");
+    if (errors.declaration) errorMessages.push("请勾选信息真实性声明");
+    
+    toast.error("表单验证失败", {
+      description: errorMessages.length > 0 
+        ? errorMessages.slice(0, 3).join("、") + (errorMessages.length > 3 ? "..." : "")
+        : "请检查表单填写是否完整",
+    });
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-8">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 pb-8">
         {/* 应聘渠道 */}
         <ChannelSection form={form} />
 
