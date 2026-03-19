@@ -193,7 +193,7 @@ export function ResumeForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 pb-8">
+      <form suppressHydrationWarning onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 pb-8">
         {/* 应聘渠道 */}
         <ChannelSection form={form} />
 
