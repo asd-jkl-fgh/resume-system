@@ -298,8 +298,9 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
 }
 
 export function getPDFDownloadUrl(filename: string): string {
-  // 部署环境使用 /tmp，需要通过 API 路由访问
-  return `/api/download?file=${encodeURIComponent(filename)}`;
+  // 部署环境需要完整的 URL
+  const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
+  return `${domain}/api/download?file=${encodeURIComponent(filename)}`;
 }
 
 export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Promise<void> {
