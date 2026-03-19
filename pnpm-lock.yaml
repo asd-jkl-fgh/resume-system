@@ -210,6 +210,9 @@ importers:
       '@types/pg':
         specifier: ^8.16.0
         version: 8.16.0
+      '@types/puppeteer-core':
+        specifier: ^7.0.4
+        version: 7.0.4
       '@types/react':
         specifier: ^19
         version: 19.2.10
@@ -2752,6 +2755,10 @@ packages:
 
   '@types/phoenix@1.6.7':
     resolution: {integrity: sha512-oN9ive//QSBkf19rfDv45M7eZPi0eEXylht2OLEXicu5b4KoQ1OzXIw+xDSGWxSxe1JmepRR/ZH283vsu518/Q==}
+
+  '@types/puppeteer-core@7.0.4':
+    resolution: {integrity: sha512-7YK4lAjXTAsFN0HFWSRr43J1iQX+xoI5EXyOYnG6F+OhqkTR+L8bYnU8dqELrKmzvbSlxczh3F7dEBJ7TriqEw==}
+    deprecated: This is a stub types definition. puppeteer-core provides its own type definitions, so you do not need this installed.
 
   '@types/raf@3.4.3':
     resolution: {integrity: sha512-c4YAvMedbPZ5tEyxzQdMoOhhJ4RD3rngZIdwC2/qDN3d7JpEhB6fiBRKVY1lg5B7Wk+uPBjn5f39j1/2MY1oOw==}
@@ -9345,6 +9352,17 @@ snapshots:
       pg-types: 2.2.0
 
   '@types/phoenix@1.6.7': {}
+
+  '@types/puppeteer-core@7.0.4':
+    dependencies:
+      puppeteer-core: 24.39.1
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - bufferutil
+      - react-native-b4a
+      - supports-color
+      - utf-8-validate
 
   '@types/raf@3.4.3':
     optional: true
