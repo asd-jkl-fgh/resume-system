@@ -10,7 +10,7 @@ const FEISHU_WEBHOOK_URL = 'https://open.feishu.cn/open-apis/bot/v2/hook/e39c0e0
 // 生成 HTML 内容（优化排版到正反两页）
 function generateResumeHTML(data: ResumeData): string {
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return '/';
+    if (!dateStr) return '无';
     try {
       const date = new Date(dateStr);
       return date.toLocaleDateString('zh-CN');
@@ -19,47 +19,47 @@ function generateResumeHTML(data: ResumeData): string {
     }
   };
 
-  // 格式化值，空值显示"/"，但"无"作为有效值显示"无"
+  // 格式化值，空值显示"无"
   const formatValue = (value: string | undefined | null) => {
-    if (value === undefined || value === null || value === '') return '/';
+    if (value === undefined || value === null || value === '') return '无';
     return value;
   };
 
   const education = data.education_detail?.map(e => 
     `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.start || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.end || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.school || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.major || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.degree || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.certificate || '/'}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.start)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.end)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.school)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.major)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.degree)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.certificate)}</td>
     </tr>`
   ).join('') || '<tr><td colspan="6" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
 
   const career = data.career_detail?.map(w => 
     `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.start || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.end || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.company || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.department || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.job || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.salary || '/'}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.start)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.end)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.company)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.department)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.job)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.salary)}</td>
     </tr>
     <tr>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">离职原因</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;" colspan="3">${w.reason || '/'}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;" colspan="3">${formatValue(w.reason)}</td>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">证明人</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${w.reference || '/'}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.reference)}</td>
     </tr>`
   ).join('') || '<tr><td colspan="6" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
 
   const family = data.family_info?.map(f => 
     `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${f.name || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${f.relation || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${f.organ || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${f.work || '/'}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${f.age || '/'}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.name)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.relation)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.organ)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.work)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.age)}</td>
     </tr>`
   ).join('') || '<tr><td colspan="5" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
 
@@ -182,21 +182,21 @@ function generateResumeHTML(data: ResumeData): string {
           <table>
             <tr>
               <td class="label">应聘渠道</td>
-              <td style="width: 42mm;">${data.channel_type || '/'}${data.channel_type === '内部推荐' && data.channel_referrer ? `（推荐人：${data.channel_referrer}）` : ''}${data.channel_type === '其他渠道' && data.channel_other ? `（${data.channel_other}）` : ''}</td>
+              <td style="width: 42mm;">${formatValue(data.channel_type)}${data.channel_type === '内部推荐' && data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}${data.channel_type === '其他渠道' && data.channel_other ? `（${formatValue(data.channel_other)}）` : ''}</td>
               <td class="label">应聘岗位</td>
-              <td>${data.post || '/'}</td>
+              <td>${formatValue(data.post)}</td>
             </tr>
             <tr>
               <td class="label">预计到岗时间</td>
-              <td>${data.entry_date || '/'}</td>
+              <td>${formatValue(data.entry_date)}</td>
               <td class="label">岗位性质</td>
-              <td>${data.job_type || '/'}</td>
+              <td>${formatValue(data.job_type)}</td>
             </tr>
             <tr>
               <td class="label">当前状态</td>
-              <td>${data.current_status === '其他' ? data.current_status_other : data.current_status || '/'}</td>
+              <td>${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
               <td class="label">目前/期望月薪</td>
-              <td>${data.current_salary || '/'} / ${data.salary_expectation || '/'}</td>
+              <td>${formatValue(data.current_salary)} / ${formatValue(data.salary_expectation)}</td>
             </tr>
           </table>
         </div>
@@ -206,35 +206,35 @@ function generateResumeHTML(data: ResumeData): string {
           <table>
             <tr>
               <td class="label">姓名（中文）</td>
-              <td style="width: 38mm;">${data.name || '/'}</td>
+              <td style="width: 38mm;">${formatValue(data.name)}</td>
               <td class="label">姓名（英文）</td>
-              <td style="width: 38mm;">${data.name_en || '/'}</td>
+              <td style="width: 38mm;">${formatValue(data.name_en)}</td>
               <td class="label">性别</td>
-              <td>${data.sex || '/'}</td>
+              <td>${formatValue(data.sex)}</td>
             </tr>
             <tr>
               <td class="label">出生日期</td>
               <td>${formatDate(data.birthday)}</td>
               <td class="label">婚姻状况</td>
-              <td colspan="3">${data.marriage || '/'}</td>
+              <td colspan="3">${formatValue(data.marriage)}</td>
             </tr>
             <tr>
               <td class="label">毕业院校</td>
-              <td>${data.school || '/'}</td>
+              <td>${formatValue(data.school)}</td>
               <td class="label">最高学历/专业</td>
-              <td colspan="3">${data.degree || '/'}</td>
+              <td colspan="3">${formatValue(data.degree)}</td>
             </tr>
             <tr>
               <td class="label">手机</td>
-              <td>${data.mobilephone || '/'}</td>
+              <td>${formatValue(data.mobilephone)}</td>
               <td class="label">电子邮件</td>
-              <td colspan="3">${data.email || '/'}</td>
+              <td colspan="3">${formatValue(data.email)}</td>
             </tr>
             <tr>
               <td class="label">户籍地</td>
-              <td>${data.household_address || '/'}</td>
+              <td>${formatValue(data.household_address)}</td>
               <td class="label">现居住地址</td>
-              <td colspan="3">${data.living_address || '/'}</td>
+              <td colspan="3">${formatValue(data.living_address)}</td>
             </tr>
             <tr>
               <td class="label">是否曾患重大疾病</td>
@@ -286,29 +286,40 @@ function generateResumeHTML(data: ResumeData): string {
           <table>
             <tr>
               <td class="label">性格特点</td>
-              <td>${data.character || '/'}</td>
+              <td>${formatValue(data.character)}</td>
             </tr>
             <tr>
               <td class="label">特长</td>
-              <td>${data.speciality || '/'}</td>
+              <td>${formatValue(data.speciality)}</td>
             </tr>
             <tr>
               <td class="label">最有价值的项目和自我收获</td>
-              <td>${data.project_detail || '/'}</td>
+              <td>${formatValue(data.project_detail)}</td>
             </tr>
             <tr>
               <td class="label">工作职责理解</td>
-              <td>${data.job_duty || '/'}</td>
+              <td>${formatValue(data.job_duty)}</td>
             </tr>
             <tr>
               <td class="label">职业规划</td>
-              <td>${data.plan || '/'}</td>
+              <td>${formatValue(data.plan)}</td>
             </tr>
           </table>
         </div>
 
         <div class="section">
           <div class="section-title">六、家庭信息</div>
+          <table>
+            <tr style="background: #e6e6e6;">
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">姓名</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">关系</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">工作单位</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">职位</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">年龄</td>
+            </tr>
+            ${family}
+          </table>
+        </div>
 
         <div class="footer">
           招聘系统-EVO | 本登记表由系统自动生成
@@ -399,6 +410,11 @@ export function getPDFDownloadUrl(filename: string): string {
 }
 
 export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Promise<void> {
+  const formatValue = (value: string | undefined | null) => {
+    if (value === undefined || value === null || value === '') return '无';
+    return value;
+  };
+
   const message = {
     msg_type: 'interactive',
     card: {
@@ -412,7 +428,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
           tag: 'div',
           text: {
             tag: 'lark_md',
-            content: `**【基本信息】**\n**姓名：**${data.name || '/'}\n**应聘岗位：**${data.post || '/'}\n**性别：**${data.sex || '/'} | **出生日期：**${data.birthday || '/'}`
+            content: `**【基本信息】**\n**姓名：**${formatValue(data.name)}\n**应聘岗位：**${formatValue(data.post)}\n**性别：**${formatValue(data.sex)} | **出生日期：**${formatValue(data.birthday)}`
           }
         },
         { tag: 'hr' },
@@ -420,7 +436,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
           tag: 'div',
           text: {
             tag: 'lark_md',
-            content: `**【联系方式】**\n**手机：**${data.mobilephone || '/'}\n**邮箱：**${data.email || '/'}`
+            content: `**【联系方式】**\n**手机：**${formatValue(data.mobilephone)}\n**邮箱：**${formatValue(data.email)}`
           }
         },
         { tag: 'hr' },
@@ -428,7 +444,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
           tag: 'div',
           text: {
             tag: 'lark_md',
-            content: `**【应聘信息】**\n**应聘渠道：**${data.channel_type || '/'}${data.channel_referrer ? `（推荐人：${data.channel_referrer}）` : ''}\n**岗位性质：**${data.job_type || '/'}\n**当前状态：**${data.current_status === '其他' ? data.current_status_other : data.current_status || '/'}\n**薪资：**${data.current_salary || '/'} / ${data.salary_expectation || '/'}`
+            content: `**【应聘信息】**\n**应聘渠道：**${formatValue(data.channel_type)}${data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}\n**岗位性质：**${formatValue(data.job_type)}\n**当前状态：**${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}\n**薪资：**${formatValue(data.current_salary)} / ${formatValue(data.salary_expectation)}`
           }
         },
         { tag: 'hr' },
@@ -436,7 +452,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
           tag: 'div',
           text: {
             tag: 'lark_md',
-            content: `**【学历背景】**\n${data.school || '/'} | ${data.degree || '/'}`
+            content: `**【学历背景】**\n${formatValue(data.school)} | ${formatValue(data.degree)}`
           }
         },
         { tag: 'hr' },
