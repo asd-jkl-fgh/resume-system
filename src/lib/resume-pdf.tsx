@@ -282,7 +282,7 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
     const sanitizedName = (data.name || 'Unknown').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
     const filename = `Resume_${sanitizedName}_${timestamp}.pdf`;
     
-    const publicDir = path.join(process.cwd(), 'public', 'resumes');
+    const publicDir = '/tmp/resumes';
     if (!fs.existsSync(publicDir)) {
       fs.mkdirSync(publicDir, { recursive: true });
     }
@@ -298,8 +298,8 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
 }
 
 export function getPDFDownloadUrl(filename: string): string {
-  const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
-  return `${domain}/resumes/${filename}`;
+  // 部署环境使用 /tmp，需要通过 API 路由访问
+  return `/api/download?file=${encodeURIComponent(filename)}`;
 }
 
 export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Promise<void> {
