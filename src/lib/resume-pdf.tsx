@@ -118,7 +118,7 @@ function generateResumeHTML(data: ResumeData): string {
         }
         
         th { padding: 3px; border: 1px solid #333; background: #e6e6e6; text-align: center; }
-        td { padding: 1px 3px; border: 1px solid #333; text-align: left; }
+        td { padding: 1px 3px; border: 1px solid #333; text-align: center; }
         th { background: #e6e6e6; text-align: center; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9pt; page-break-inside: avoid; }
