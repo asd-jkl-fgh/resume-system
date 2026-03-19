@@ -19,6 +19,12 @@ function generateResumeHTML(data: ResumeData): string {
     }
   };
 
+  // 格式化值，空值显示"/"，但"无"作为有效值显示"无"
+  const formatValue = (value: string | undefined | null) => {
+    if (value === undefined || value === null || value === '') return '/';
+    return value;
+  };
+
   const education = data.education_detail?.map(e => 
     `<tr>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${e.start || '/'}</td>
@@ -232,11 +238,15 @@ function generateResumeHTML(data: ResumeData): string {
             </tr>
             <tr>
               <td class="label">是否曾患重大疾病</td>
-              <td>${data.has_disease || '/'}</td>
+              <td>${formatValue(data.has_disease)}</td>
               <td class="label">是否曾发生劳动纠纷</td>
-              <td>${data.has_dispute || '/'}</td>
+              <td>${formatValue(data.has_dispute)}</td>
               <td class="label">是否有犯罪记录</td>
-              <td>${data.has_criminal || '/'}</td>
+              <td>${formatValue(data.has_criminal)}</td>
+            </tr>
+            <tr>
+              <td class="label">兴趣爱好</td>
+              <td colspan="5">${formatValue(data.hobby)}</td>
             </tr>
           </table>
         </div>
@@ -299,39 +309,6 @@ function generateResumeHTML(data: ResumeData): string {
 
         <div class="section">
           <div class="section-title">六、家庭信息</div>
-          <table>
-            <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">姓名</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">关系</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">工作单位</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">职位</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">年龄</td>
-            </tr>
-            ${family}
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">七、其他信息</div>
-          <table>
-            <tr>
-              <td class="label">兴趣爱好</td>
-              <td>${data.hobby || '/'}</td>
-            </tr>
-            <tr>
-              <td class="label">健康状况</td>
-              <td>${data.health || '/'}</td>
-            </tr>
-            <tr>
-              <td class="label">是否有犯罪记录</td>
-              <td>${data.criminal || '/'}</td>
-            </tr>
-            <tr>
-              <td class="label">其他需要说明的事项</td>
-              <td>${data.other || '/'}</td>
-            </tr>
-          </table>
-        </div>
 
         <div class="footer">
           招聘系统-EVO | 本登记表由系统自动生成
