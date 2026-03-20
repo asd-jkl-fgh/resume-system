@@ -25,6 +25,17 @@ function generateResumeHTML(data: ResumeData): string {
     return value;
   };
 
+  // 从"学历/专业"格式中提取学历和专业
+  const parseDegreeAndMajor = (value: string | undefined | null) => {
+    if (!value || value === '无') return { degree: '无', major: '无' };
+    const parts = value.split('/');
+    return {
+      degree: parts[0] || '无',
+      major: parts[1] || '无'
+    };
+  };
+  const { degree: highestDegree, major: majorFromDegree } = parseDegreeAndMajor(data.degree);
+
   const education = data.education_detail?.map(e => 
     `<tr>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.start)}</td>
@@ -228,9 +239,9 @@ function generateResumeHTML(data: ResumeData): string {
               <td class="label">毕业院校</td>
               <td>${formatValue(data.school)}</td>
               <td class="label">最高学历</td>
-              <td>${formatValue(data.degree)}</td>
+              <td>${highestDegree}</td>
               <td class="label">专业</td>
-              <td></td>
+              <td>${majorFromDegree}</td>
             </tr>
             <tr>
               <td class="label">手机</td>
