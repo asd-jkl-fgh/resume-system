@@ -29,7 +29,7 @@ export function PersonalSection({ form }: PersonalSectionProps) {
       <CardContent className="space-y-6">
         {/* 提示信息 */}
         <p className="text-sm text-gray-500 bg-gray-50 p-3 rounded">
-          以下内容请完整填写，如无可用"/"表示
+          以下内容请完整填写
         </p>
 
         {/* 姓名（中文）、姓名（英文）、性别、出生日期 */}
