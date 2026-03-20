@@ -52,7 +52,8 @@ export interface ResumeData {
   
   // 学历信息
   school: string; // 毕业院校
-  degree: string; // 最高学历/专业
+  degree: string; // 最高学历
+  major: string; // 专业
   
   // 联系方式
   household_address: string; // 户籍地
@@ -113,6 +114,7 @@ export const initialResumeData: ResumeData = {
   birthday: '',
   school: '',
   degree: '',
+  major: '',
   household_address: '',
   mobilephone: '',
   email: '',

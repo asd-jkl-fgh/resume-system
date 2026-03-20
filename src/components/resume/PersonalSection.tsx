@@ -108,8 +108,8 @@ export function PersonalSection({ form }: PersonalSectionProps) {
           />
         </div>
 
-        {/* 毕业院校、最高学历/专业 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* 毕业院校、最高学历、专业 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name="school"
@@ -129,9 +129,23 @@ export function PersonalSection({ form }: PersonalSectionProps) {
             name="degree"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>最高学历/专业</FormLabel>
+                <FormLabel>最高学历</FormLabel>
                 <FormControl>
-                  <Input placeholder="如：本科/计算机科学" {...field} />
+                  <Input placeholder="如：本科" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="major"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>专业</FormLabel>
+                <FormControl>
+                  <Input placeholder="如：计算机科学" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

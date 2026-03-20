@@ -25,16 +25,7 @@ function generateResumeHTML(data: ResumeData): string {
     return value;
   };
 
-  // 从"学历/专业"格式中提取学历和专业
-  const parseDegreeAndMajor = (value: string | undefined | null) => {
-    if (!value || value === '无') return { degree: '无', major: '无' };
-    const parts = value.split('/');
-    return {
-      degree: parts[0] || '无',
-      major: parts[1] || '无'
-    };
-  };
-  const { degree: highestDegree, major: majorFromDegree } = parseDegreeAndMajor(data.degree);
+  const { degree: highestDegree, major: majorFromDegree } = { degree: data.degree || '', major: data.major || '' };
 
   const education = data.education_detail?.map(e => 
     `<tr>
