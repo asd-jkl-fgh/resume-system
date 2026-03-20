@@ -48,7 +48,7 @@ function generateResumeHTML(data: ResumeData): string {
     <tr>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">离职原因</td>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;" colspan="3">${formatValue(w.reason)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">证明人</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">证明人及联系方式</td>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.reference)}</td>
     </tr>`
   ).join('') || '<tr><td colspan="6" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
@@ -221,25 +221,27 @@ function generateResumeHTML(data: ResumeData): string {
               <td class="label">出生日期</td>
               <td>${formatDate(data.birthday)}</td>
               <td class="label">兴趣爱好</td>
-              <td colspan="3">${formatValue(data.hobby)}</td>
-            </tr>
-            <tr>
+              <td>${formatValue(data.hobby)}</td>
               <td class="label">婚姻状况</td>
               <td>${formatValue(data.marriage)}</td>
+            </tr>
+            <tr>
               <td class="label">毕业院校</td>
-              <td colspan="3">${formatValue(data.school)}</td>
-            </tr>
-            <tr>
-              <td class="label">最高学历/专业</td>
+              <td>${formatValue(data.school)}</td>
+              <td class="label">最高学历</td>
               <td>${formatValue(data.degree)}</td>
-              <td class="label">手机</td>
-              <td colspan="3">${formatValue(data.mobilephone)}</td>
+              <td class="label">专业</td>
+              <td></td>
             </tr>
             <tr>
+              <td class="label">手机</td>
+              <td>${formatValue(data.mobilephone)}</td>
               <td class="label">电子邮件</td>
-              <td>${formatValue(data.email)}</td>
+              <td colspan="3">${formatValue(data.email)}</td>
+            </tr>
+            <tr>
               <td class="label">户籍地</td>
-              <td colspan="3">${formatValue(data.household_address)}</td>
+              <td colspan="5">${formatValue(data.household_address)}</td>
             </tr>
             <tr>
               <td class="label">现居住地址</td>
@@ -248,7 +250,7 @@ function generateResumeHTML(data: ResumeData): string {
             <tr>
               <td class="label">是否曾患重大疾病</td>
               <td>${formatValue(data.has_disease)}</td>
-              <td class="label">是否曾发生劳动纠纷</td>
+              <td class="label">是否发生劳动纠纷</td>
               <td>${formatValue(data.has_dispute)}</td>
               <td class="label">是否有犯罪记录</td>
               <td>${formatValue(data.has_criminal)}</td>
