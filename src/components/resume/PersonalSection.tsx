@@ -251,7 +251,7 @@ export function PersonalSection({ form }: PersonalSectionProps) {
               <FormItem>
                 <FormLabel>现居住地址</FormLabel>
                 <FormControl>
-                  <Input placeholder="如：广东省深圳市南山区xx路xx号，518000" {...field} />
+                  <Input placeholder="如：广东省深圳市南山区xx路xx号" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
