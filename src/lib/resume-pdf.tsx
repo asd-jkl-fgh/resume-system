@@ -287,8 +287,8 @@ function generateResumeHTML(data: ResumeData): string {
           <div class="section-title">四、工作经历</div>
           <table>
             <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">起始</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">终止</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; width: 20mm;">起始</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; width: 20mm;">终止</td>
               <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">公司名称</td>
               <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">部门</td>
               <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">职位</td>
