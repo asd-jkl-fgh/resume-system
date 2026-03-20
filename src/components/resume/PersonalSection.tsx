@@ -249,7 +249,7 @@ export function PersonalSection({ form }: PersonalSectionProps) {
             name="living_address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>现居住地址及邮政编码</FormLabel>
+                <FormLabel>现居住地址</FormLabel>
                 <FormControl>
                   <Input placeholder="如：广东省深圳市南山区xx路xx号，518000" {...field} />
                 </FormControl>
