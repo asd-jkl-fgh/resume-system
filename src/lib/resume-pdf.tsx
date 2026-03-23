@@ -188,23 +188,23 @@ function generateResumeHTML(data: ResumeData): string {
           <table>
             <tr>
               <td class="label">应聘渠道</td>
-              <td style="width: 42mm;">${formatValue(data.channel_type)}${data.channel_type === '内部推荐' && data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}${data.channel_type === '其他渠道' && data.channel_other ? `（${formatValue(data.channel_other)}）` : ''}</td>
+              <td colspan="2">${formatValue(data.channel_type)}${data.channel_type === '内部推荐' && data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}${data.channel_type === '其他渠道' && data.channel_other ? `（${formatValue(data.channel_other)}）` : ''}</td>
               <td class="label">应聘岗位</td>
-              <td>${formatValue(data.post)}</td>
+              <td colspan="2">${formatValue(data.post)}</td>
             </tr>
             <tr>
               <td class="label">预计到岗时间</td>
-              <td>${formatValue(data.entry_date)}</td>
+              <td colspan="2">${formatValue(data.entry_date)}</td>
               <td class="label">岗位性质</td>
-              <td>${formatValue(data.job_type)}</td>
+              <td colspan="2">${formatValue(data.job_type)}</td>
             </tr>
             <tr>
-              <td class="label" style="width: 18mm;">当前状态</td>
-              <td style="width: 22mm;">${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
-              <td class="label" style="width: 18mm;">目前月薪</td>
-              <td style="width: 22mm;">${formatValue(data.current_salary)}</td>
-              <td class="label" style="width: 18mm;">期望月薪</td>
-              <td style="width: 22mm;">${formatValue(data.salary_expectation)}</td>
+              <td class="label">当前状态</td>
+              <td>${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
+              <td class="label">目前月薪</td>
+              <td>${formatValue(data.current_salary)}</td>
+              <td class="label">期望月薪</td>
+              <td>${formatValue(data.salary_expectation)}</td>
             </tr>
           </table>
         </div>
