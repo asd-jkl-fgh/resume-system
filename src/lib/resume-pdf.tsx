@@ -200,13 +200,13 @@ function generateResumeHTML(data: ResumeData): string {
             </tr>
             <tr>
               <td class="label">当前状态</td>
-              <td>${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
-              <td class="label">目前月薪</td>
-              <td>${formatValue(data.current_salary)}</td>
+              <td colspan="3">${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
             </tr>
             <tr>
+              <td class="label">目前月薪</td>
+              <td>${formatValue(data.current_salary)}</td>
               <td class="label">期望月薪</td>
-              <td colspan="3">${formatValue(data.salary_expectation)}</td>
+              <td>${formatValue(data.salary_expectation)}</td>
             </tr>
           </table>
         </div>
