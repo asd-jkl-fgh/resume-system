@@ -199,8 +199,9 @@ function generateResumeHTML(data: ResumeData): string {
               <td>${formatValue(data.job_type)}</td>
             </tr>
             <tr>
-              <td class="label">状态/薪资</td>
-              <td colspan="3">当前状态：${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}&nbsp;&nbsp;&nbsp;&nbsp;目前月薪：${formatValue(data.current_salary)}&nbsp;&nbsp;&nbsp;&nbsp;期望月薪：${formatValue(data.salary_expectation)}</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5; width: 33mm;">当前状态：${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5; width: 33mm;">目前月薪：${formatValue(data.current_salary)}</td>
+              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5; width: 34mm;" colspan="2">期望月薪：${formatValue(data.salary_expectation)}</td>
             </tr>
           </table>
         </div>
