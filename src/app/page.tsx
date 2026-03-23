@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
-import { ResumeForm } from '@/components/resume/ResumeForm';
+'use client';
 
-export const metadata: Metadata = {
-  title: '简历填写 - 招聘系统',
-  description: '请填写您的个人简历信息',
-};
+import dynamic from 'next/dynamic';
+
+const ResumeForm = dynamic(() => import('@/components/resume/ResumeForm').then(mod => ({ default: mod.ResumeForm })), {
+  ssr: false,
+  loading: () => <div className="p-8 text-center text-gray-500">加载中...</div>,
+});
 
 export default function Home() {
   return (
