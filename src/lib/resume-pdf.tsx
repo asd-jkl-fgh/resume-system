@@ -49,7 +49,7 @@ function generateResumeHTML(data: ResumeData): string {
     </tr>
     <tr>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">离职原因</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;" colspan="3">${formatValue(w.reason)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; text-align: left;" colspan="3">${formatValue(w.reason)}</td>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">证明人及联系方式</td>
       <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.reference)}</td>
     </tr>`
@@ -241,12 +241,12 @@ function generateResumeHTML(data: ResumeData): string {
               <td colspan="3">${formatValue(data.email)}</td>
             </tr>
             <tr>
-              <td class="label">户籍地</td>
-              <td colspan="5">${formatValue(data.household_address)}</td>
+              <td class="label" style="width: 30mm;">户籍地</td>
+              <td colspan="5" style="text-align: left;">${formatValue(data.household_address)}</td>
             </tr>
             <tr>
-              <td class="label">现居住地址</td>
-              <td colspan="5">${formatValue(data.living_address)}</td>
+              <td class="label" style="width: 30mm;">现居住地址</td>
+              <td colspan="5" style="text-align: left;">${formatValue(data.living_address)}</td>
             </tr>
             <tr>
               <td class="label">是否曾患重大疾病</td>
@@ -293,24 +293,24 @@ function generateResumeHTML(data: ResumeData): string {
           <div class="section-title">五、个人特质</div>
           <table>
             <tr>
-              <td class="label">性格特点</td>
-              <td>${formatValue(data.character)}</td>
+              <td class="label" style="width: 40mm;">性格特点</td>
+              <td style="text-align: left;">${formatValue(data.character)}</td>
             </tr>
             <tr>
-              <td class="label">特长</td>
-              <td>${formatValue(data.speciality)}</td>
+              <td class="label" style="width: 40mm;">特长</td>
+              <td style="text-align: left;">${formatValue(data.speciality)}</td>
             </tr>
             <tr>
-              <td class="label">最有价值的项目和自我收获</td>
-              <td>${formatValue(data.project_detail)}</td>
+              <td class="label" style="width: 40mm;">最有价值的项目和自我收获</td>
+              <td style="text-align: left;">${formatValue(data.project_detail)}</td>
             </tr>
             <tr>
-              <td class="label">工作职责理解</td>
-              <td>${formatValue(data.job_duty)}</td>
+              <td class="label" style="width: 40mm;">工作职责理解</td>
+              <td style="text-align: left;">${formatValue(data.job_duty)}</td>
             </tr>
             <tr>
-              <td class="label">职业规划</td>
-              <td>${formatValue(data.plan)}</td>
+              <td class="label" style="width: 40mm;">职业规划</td>
+              <td style="text-align: left;">${formatValue(data.plan)}</td>
             </tr>
           </table>
         </div>
