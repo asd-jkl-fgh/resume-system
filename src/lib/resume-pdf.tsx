@@ -201,12 +201,8 @@ function generateResumeHTML(data: ResumeData): string {
             <tr>
               <td class="label">当前状态</td>
               <td>${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
-            </tr>
-            <tr>
               <td class="label">目前月薪（税前）</td>
               <td>${formatValue(data.current_salary)}</td>
-            </tr>
-            <tr>
               <td class="label">期望月薪（税前）</td>
               <td>${formatValue(data.salary_expectation)}</td>
             </tr>
