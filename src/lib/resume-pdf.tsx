@@ -201,10 +201,8 @@ function generateResumeHTML(data: ResumeData): string {
             <tr>
               <td class="label">当前状态</td>
               <td>${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
-              <td class="label">目前月薪</td>
-              <td>${formatValue(data.current_salary)}</td>
-              <td class="label">期望月薪</td>
-              <td>${formatValue(data.salary_expectation)}</td>
+              <td class="label">目前/期望月薪</td>
+              <td>${formatValue(data.current_salary)} / ${formatValue(data.salary_expectation)}</td>
             </tr>
           </table>
         </div>
@@ -454,7 +452,7 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
           tag: 'div',
           text: {
             tag: 'lark_md',
-            content: `**【应聘信息】**\n**应聘渠道：**${formatValue(data.channel_type)}${data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}\n**岗位性质：**${formatValue(data.job_type)}\n**当前状态：**${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}\n**目前月薪：**${formatValue(data.current_salary)}\n**期望月薪：**${formatValue(data.salary_expectation)}`
+            content: `**【应聘信息】**\n**应聘渠道：**${formatValue(data.channel_type)}${data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}\n**岗位性质：**${formatValue(data.job_type)}\n**当前状态：**${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}\n**薪资：**${formatValue(data.current_salary)} / ${formatValue(data.salary_expectation)}`
           }
         },
         { tag: 'hr' },
