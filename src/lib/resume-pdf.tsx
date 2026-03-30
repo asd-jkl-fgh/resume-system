@@ -407,21 +407,13 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
   }
 }
 
-// 获取 PDF 下载链接（使用压缩的 Base64 数据）
+// 获取 PDF 下载链接（使用 URL-safe Base64 编码）
 export function getPDFDownloadUrl(filename: string, base64: string): string {
   const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
   
-  // 使用 pako 压缩数据以减小 URL 长度
-  try {
-    const pako = require('pako');
-    const compressed = pako.deflate(base64);
-    const encoded = Buffer.from(compressed).toString('base64');
-    return `${domain}/d?f=${encodeURIComponent(filename)}&d=${encoded}`;
-  } catch (e) {
-    // 如果压缩失败，使用原始 Base64
-    const encoded = Buffer.from(base64).toString('base64');
-    return `${domain}/d?f=${encodeURIComponent(filename)}&d=${encoded}`;
-  }
+  // 使用 URL-safe Base64 编码（替换 +/= 为 -_.）
+  const encoded = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '.');
+  return `${domain}/d?f=${encodeURIComponent(filename)}&d=${encoded}`;
 }
 
 // 获取简单下载链接（需要先保存文件）

@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const filename = searchParams.get('f');
-    const data = searchParams.get('d');
+    let data = searchParams.get('d');
 
     if (!filename || !data) {
       return NextResponse.json({ error: '缺少参数' }, { status: 400 });
@@ -16,19 +16,9 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-      // 尝试解压数据
-      let base64;
-      try {
-        const pako = require('pako');
-        const compressed = Buffer.from(data, 'base64');
-        const decompressed = pako.inflate(compressed, { to: 'string' });
-        base64 = decompressed;
-      } catch (e) {
-        // 如果解压失败，假设是原始 Base64
-        base64 = Buffer.from(data, 'base64').toString();
-      }
-      
-      const pdfBuffer = Buffer.from(base64, 'base64');
+      // 还原 URL-safe Base64 为标准 Base64
+      data = data.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
+      const pdfBuffer = Buffer.from(data, 'base64');
       
       // 直接返回 PDF 下载
       return new NextResponse(pdfBuffer, {
