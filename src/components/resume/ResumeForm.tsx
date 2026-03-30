@@ -17,6 +17,217 @@ import { TraitsSection } from "./TraitsSection";
 import { useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 
+// 生成简历HTML内容（用于前端PDF生成）
+function generateResumeHTML(data: ResumeData): string {
+  const formatValue = (value: string | undefined | null) => {
+    if (value === undefined || value === null || value === '') return '无';
+    return value;
+  };
+
+  const education = data.education_detail?.map(e => 
+    `<tr>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.start)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.end)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.school)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.major)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.degree)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.certificate)}</td>
+    </tr>`
+  ).join('');
+
+  const career = data.career_detail?.map(w => 
+    `<tr>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.start)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.end)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.company)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.department)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.job)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.salary)}</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">离职原因</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; text-align: left;" colspan="3">${formatValue(w.reason)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">证明人及联系方式</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.reference)}</td>
+    </tr>`
+  ).join('');
+
+  const family = data.family_info?.map(f => 
+    `<tr>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.name)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.relation)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.organ)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.work)}</td>
+      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.age)}</td>
+    </tr>`
+  ).join('');
+
+  return `
+    <div style="width: 210mm; padding: 10mm; font-family: 'Microsoft YaHei', 'SimHei', sans-serif; font-size: 10pt; line-height: 1.3; color: #333;">
+      <h1 style="text-align: center; font-size: 18pt; margin-bottom: 3mm; border-bottom: 2px solid #333; padding-bottom: 5mm;">应聘人员信息登记表</h1>
+      <p style="text-align: center; color: #666; font-size: 9pt; margin-bottom: 5mm;">提交时间：${new Date().toLocaleString('zh-CN')}</p>
+      
+      <div style="margin-bottom: 5mm;">
+        <h2 style="font-size: 11pt; background: #e6e6e6; padding: 2px 6px; border-left: 3px solid #1890ff; margin-bottom: 3px;">一、应聘渠道</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5; width: 28mm;">应聘渠道</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.channel_type)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5; width: 28mm;">应聘岗位</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.post)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">预计到岗时间</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.entry_date)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">岗位性质</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.job_type)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">当前状态</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.current_status)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">目前月薪（税前）</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.current_salary)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">期望月薪（税前）</td>
+            <td style="border: 1px solid #333; padding: 3px;" colspan="3">${formatValue(data.salary_expectation)}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 5mm;">
+        <h2 style="font-size: 11pt; background: #e6e6e6; padding: 2px 6px; border-left: 3px solid #1890ff; margin-bottom: 3px;">二、个人资料</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5; width: 28mm;">姓名（中文）</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.name)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5; width: 28mm;">姓名（英文）</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.name_en)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">性别</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.sex)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">出生日期</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.birthday)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">毕业院校</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.school)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">最高学历</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.degree)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">专业</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.major)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">婚姻状况</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.marriage)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">手机</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.mobilephone)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">电子邮件</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.email)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">户籍地</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;" colspan="3">${formatValue(data.household_address)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">现居住地址</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;" colspan="3">${formatValue(data.living_address)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">是否曾患重大疾病</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.has_disease)}</td>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">是否发生劳动纠纷</td>
+            <td style="border: 1px solid #333; padding: 3px;">${formatValue(data.has_dispute)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">是否有犯罪记录</td>
+            <td style="border: 1px solid #333; padding: 3px;" colspan="3">${formatValue(data.has_criminal)}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 5mm;">
+        <h2 style="font-size: 11pt; background: #e6e6e6; padding: 2px 6px; border-left: 3px solid #1890ff; margin-bottom: 3px;">三、教育经历</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+          <tr style="background: #e6e6e6;">
+            <td style="border: 1px solid #333; padding: 3px;">起始</td>
+            <td style="border: 1px solid #333; padding: 3px;">终止</td>
+            <td style="border: 1px solid #333; padding: 3px;">学校名称</td>
+            <td style="border: 1px solid #333; padding: 3px;">专业</td>
+            <td style="border: 1px solid #333; padding: 3px;">学历</td>
+            <td style="border: 1px solid #333; padding: 3px;">证书/学位</td>
+          </tr>
+          ${education}
+        </table>
+      </div>
+
+      <div style="margin-bottom: 5mm;">
+        <h2 style="font-size: 11pt; background: #e6e6e6; padding: 2px 6px; border-left: 3px solid #1890ff; margin-bottom: 3px;">四、工作经历</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+          <tr style="background: #e6e6e6;">
+            <td style="border: 1px solid #333; padding: 3px;">起始</td>
+            <td style="border: 1px solid #333; padding: 3px;">终止</td>
+            <td style="border: 1px solid #333; padding: 3px;">公司名称</td>
+            <td style="border: 1px solid #333; padding: 3px;">部门</td>
+            <td style="border: 1px solid #333; padding: 3px;">职位</td>
+            <td style="border: 1px solid #333; padding: 3px;">薪资</td>
+          </tr>
+          ${career}
+        </table>
+      </div>
+
+      <div style="margin-bottom: 5mm;">
+        <h2 style="font-size: 11pt; background: #e6e6e6; padding: 2px 6px; border-left: 3px solid #1890ff; margin-bottom: 3px;">五、个人特质</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5; width: 50mm;">性格特点</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;">${formatValue(data.character)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">特长</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;">${formatValue(data.speciality)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">最有价值的项目和自我收获</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;">${formatValue(data.project_detail)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">工作职责理解</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;">${formatValue(data.job_duty)}</td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid #333; padding: 3px; background: #f5f5f5;">职业规划</td>
+            <td style="border: 1px solid #333; padding: 3px; text-align: left;">${formatValue(data.plan)}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="margin-bottom: 5mm;">
+        <h2 style="font-size: 11pt; background: #e6e6e6; padding: 2px 6px; border-left: 3px solid #1890ff; margin-bottom: 3px;">六、家庭信息</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+          <tr style="background: #e6e6e6;">
+            <td style="border: 1px solid #333; padding: 3px;">姓名</td>
+            <td style="border: 1px solid #333; padding: 3px;">关系</td>
+            <td style="border: 1px solid #333; padding: 3px;">工作单位</td>
+            <td style="border: 1px solid #333; padding: 3px;">职位</td>
+            <td style="border: 1px solid #333; padding: 3px;">年龄</td>
+          </tr>
+          ${family}
+        </table>
+      </div>
+
+      <div style="margin-top: 10mm; padding: 5mm; border: 1px solid #333;">
+        <h3 style="font-size: 12pt; margin-bottom: 5mm;">声明</h3>
+        <p style="font-size: 8pt; line-height: 1.6; margin-bottom: 8mm;">本人已经明白及接受上述之个人资料保障原则。同时，有关本人在求职申请表上所填写之一切均真实及正确。在必要时同意授权上海进化时代营销策划有限公司对上述信息进行核实确认。一旦以上任意陈述被发现不实或本人蓄意隐瞒相关事实，公司有权立即解除劳动关系并不给予任何经济补偿。</p>
+        <p>应聘人签署：________________　　应聘日期：________________</p>
+      </div>
+    </div>
+  `;
+}
+
 const resumeSchema = z.object({
   // 应聘渠道
   channel_type: z.string().min(1, "请选择应聘渠道"),
@@ -114,6 +325,7 @@ export function ResumeForm() {
   const onSubmit = async (data: ResumeData) => {
     setIsSubmitting(true);
     try {
+      // 1. 先发送数据到服务器
       const response = await fetch("/api/resume", {
         method: "POST",
         headers: {
@@ -125,8 +337,39 @@ export function ResumeForm() {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        // 2. 生成并下载PDF
+        try {
+          const html2pdf = (await import('html2pdf.js')).default;
+          
+          // 创建PDF内容
+          const pdfContent = document.createElement('div');
+          pdfContent.innerHTML = generateResumeHTML(data);
+          pdfContent.style.fontFamily = 'Microsoft YaHei, SimHei, sans-serif';
+          pdfContent.style.fontSize = '10pt';
+          pdfContent.style.lineHeight = '1.3';
+          pdfContent.style.padding = '10mm';
+          pdfContent.style.width = '210mm';
+          pdfContent.style.background = 'white';
+          pdfContent.style.color = '#333';
+          
+          document.body.appendChild(pdfContent);
+          
+          const opt = {
+            margin: 0,
+            filename: `Resume_${data.name}_${Date.now()}.pdf`,
+            image: { type: 'jpeg' as const, quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+          };
+          
+          await html2pdf().set(opt).from(pdfContent).save();
+          document.body.removeChild(pdfContent);
+        } catch (pdfError) {
+          console.error('生成PDF失败:', pdfError);
+        }
+        
         toast.success("提交成功", {
-          description: "您的简历已成功提交，我们会尽快与您联系！",
+          description: "您的简历已成功提交，PDF正在下载中！",
         });
         form.reset(initialResumeData);
       } else {
