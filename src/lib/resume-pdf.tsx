@@ -1,451 +1,262 @@
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { ResumeData } from '@/types/resume';
-import fs from 'fs';
-import path from 'path';
 
 // 飞书 Webhook URL
 const FEISHU_WEBHOOK_URL = 'https://open.feishu.cn/open-apis/bot/v2/hook/e39c0e09-3b64-4ce4-b01a-5049f108789b';
 
-// 生成 HTML 内容（优化排版到正反两页）
-function generateResumeHTML(data: ResumeData): string {
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '无';
-    try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('zh-CN');
-    } catch {
-      return dateStr;
-    }
-  };
-
-  // 格式化值，空值显示"无"
-  const formatValue = (value: string | undefined | null) => {
-    if (value === undefined || value === null || value === '') return '无';
-    return value;
-  };
-
-  const { degree: highestDegree, major: majorFromDegree } = { degree: data.degree || '', major: data.major || '' };
-
-  const education = data.education_detail?.map(e => 
-    `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.start)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.end)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.school)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.major)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.degree)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(e.certificate)}</td>
-    </tr>`
-  ).join('') || '<tr><td colspan="6" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
-
-  const career = data.career_detail?.map(w => 
-    `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.start)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.end)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.company)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.department)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.job)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.salary)}</td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">离职原因</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; text-align: left;" colspan="3">${formatValue(w.reason)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; background: #f5f5f5;">证明人及联系方式</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(w.reference)}</td>
-    </tr>`
-  ).join('') || '<tr><td colspan="6" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
-
-  const family = data.family_info?.map(f => 
-    `<tr>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.name)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.relation)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.organ)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.work)}</td>
-      <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">${formatValue(f.age)}</td>
-    </tr>`
-  ).join('') || '<tr><td colspan="5" style="border: 1px solid #333; padding: 3px; text-align: center;">无</td></tr>';
-
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        @page { size: A4; margin: 0; }
-        body { 
-          font-family: "Microsoft YaHei", "SimHei", "Helvetica Neue", Arial, sans-serif; 
-          font-size: 10pt; 
-          line-height: 1.3;
-          width: 210mm;
-          margin: 0 auto;
-          padding: 0;
-        }
-        .page { 
-          width: 210mm; 
-          padding: 10mm; 
-          background: white;
-          page-break-after: auto;
-          page-break-inside: avoid;
-        }
-        body {
-          page-break-after: auto;
-        }
-        
-        .header { 
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 3mm; 
-          border-bottom: 2px solid #333; 
-          padding: 5mm 0;
-          min-height: 30px;
-        }
-        .header-left { display: flex; align-items: center; }
-        .header img { height: 25px; }
-        .header-title { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: 100%; }
-        .header h1 { font-size: 18pt; margin-bottom: 3px; }
-        .header p { color: #666; font-size: 9pt; margin-top: 5px; }
-        .header-right { width: 80px; }
-        
-        .section { margin-bottom: 4mm; page-break-inside: avoid; }
-        .section-title { 
-          font-size: 11pt; 
-          font-weight: bold; 
-          background: #e6e6e6; 
-          padding: 2px 6px; 
-          margin-bottom: 3px;
-          border-left: 3px solid #1890ff;
-        }
-        
-        th { padding: 3px; border: 1px solid #333; background: #e6e6e6; text-align: center; }
-        td { padding: 1px 3px; border: 1px solid #333; text-align: center; }
-        th { background: #e6e6e6; text-align: center; }
-        
-        table { width: 100%; border-collapse: collapse; margin-bottom: 3px; font-size: 9pt; page-break-inside: avoid; }
-        td { padding: 1px 3px; border: 1px solid #333; }
-        td.label { width: 28mm; background: #f5f5f5; font-weight: 500; }
-        td.label2 { width: 22mm; background: #f5f5f5; font-weight: 500; }
-        td.label3 { width: 18mm; background: #f5f5f5; font-weight: 500; }
-        
-        .two-col { display: table; width: 100%; }
-        .two-col > div { display: table-cell; }
-        
-        .footer { 
-          text-align: center; 
-          font-size: 8pt; 
-          color: #999; 
-          margin-top: 5mm;
-          border-top: 1px solid #eee;
-          padding-top: 3mm;
-        }
-        
-        .declaration {
-          margin-top: 10mm;
-          padding: 5mm;
-          border: 1px solid #333;
-        }
-        .declaration-title {
-          font-size: 12pt;
-          font-weight: bold;
-          margin-bottom: 5mm;
-        }
-        .declaration-content {
-          font-size: 8pt;
-          line-height: 1.6;
-          margin-bottom: 8mm;
-          text-align: justify;
-        }
-        .declaration-sign {
-          display: flex;
-          justify-content: space-between;
-          font-size: 9pt;
-        }
-        .sign-line {
-          display: inline-block;
-          min-width: 50mm;
-          border-bottom: 1px solid #333;
-          margin: 0 3mm;
-        }
-      </style>
-    </head>
-    <body>
-      <!-- 第一页 -->
-      <div class="page">
-        <div class="header">
-          <div class="header-left">
-            <img src="https://f5b50e9c-b63f-45e9-a8a2-798a53ef13f7.dev.coze.site/logo.png" alt="EVOLUTICAN" />
-          </div>
-          <div class="header-title">
-            <h1>应聘人员信息登记表</h1>
-            <p>提交时间：${new Date().toLocaleString('zh-CN')}</p>
-          </div>
-          <div class="header-right"></div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">一、应聘渠道</div>
-          <table>
-            <tr>
-              <td class="label">应聘渠道</td>
-              <td colspan="2">${formatValue(data.channel_type)}${data.channel_type === '内部推荐' && data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}${data.channel_type === '其他渠道' && data.channel_other ? `（${formatValue(data.channel_other)}）` : ''}</td>
-              <td class="label">应聘岗位</td>
-              <td colspan="2">${formatValue(data.post)}</td>
-            </tr>
-            <tr>
-              <td class="label">预计到岗时间</td>
-              <td colspan="2">${formatValue(data.entry_date)}</td>
-              <td class="label">岗位性质</td>
-              <td colspan="2">${formatValue(data.job_type)}</td>
-            </tr>
-            <tr>
-              <td class="label">当前状态</td>
-              <td>${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}</td>
-              <td class="label">目前月薪（税前）</td>
-              <td>${formatValue(data.current_salary)}</td>
-              <td class="label">期望月薪（税前）</td>
-              <td>${formatValue(data.salary_expectation)}</td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">二、个人资料</div>
-          <table>
-            <tr>
-              <td class="label">姓名（中文）</td>
-              <td style="width: 38mm;">${formatValue(data.name)}</td>
-              <td class="label">姓名（英文）</td>
-              <td style="width: 38mm;">${formatValue(data.name_en)}</td>
-              <td class="label">性别</td>
-              <td>${formatValue(data.sex)}</td>
-            </tr>
-            <tr>
-              <td class="label">出生日期</td>
-              <td>${formatDate(data.birthday)}</td>
-              <td class="label">兴趣爱好</td>
-              <td>${formatValue(data.hobby)}</td>
-              <td class="label">婚姻状况</td>
-              <td>${formatValue(data.marriage)}</td>
-            </tr>
-            <tr>
-              <td class="label">毕业院校</td>
-              <td>${formatValue(data.school)}</td>
-              <td class="label">最高学历</td>
-              <td>${highestDegree}</td>
-              <td class="label">专业</td>
-              <td>${majorFromDegree}</td>
-            </tr>
-            <tr>
-              <td class="label">手机</td>
-              <td>${formatValue(data.mobilephone)}</td>
-              <td class="label">电子邮件</td>
-              <td colspan="3">${formatValue(data.email)}</td>
-            </tr>
-            <tr>
-              <td class="label" style="width: 30mm;">户籍地</td>
-              <td colspan="5" style="text-align: left;">${formatValue(data.household_address)}</td>
-            </tr>
-            <tr>
-              <td class="label" style="width: 30mm;">现居住地址</td>
-              <td colspan="5" style="text-align: left;">${formatValue(data.living_address)}</td>
-            </tr>
-            <tr>
-              <td class="label">是否曾患重大疾病</td>
-              <td>${formatValue(data.has_disease)}</td>
-              <td class="label">是否发生劳动纠纷</td>
-              <td>${formatValue(data.has_dispute)}</td>
-              <td class="label">是否有犯罪记录</td>
-              <td>${formatValue(data.has_criminal)}</td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">三、教育经历 <span style="font-size: 8pt; font-weight: normal;">（请从高中开始填写）</span></div>
-          <table>
-            <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">起始</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">终止</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">学校名称</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">专业</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">学历</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">证书/学位</td>
-            </tr>
-            ${education}
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">四、工作经历</div>
-          <table>
-            <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; width: 20mm;">起始</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt; width: 20mm;">终止</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">公司名称</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">部门</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">职位</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">薪资</td>
-            </tr>
-            ${career}
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">五、个人特质</div>
-          <table>
-            <tr>
-              <td class="label" style="width: 40mm;">性格特点</td>
-              <td style="text-align: left;">${formatValue(data.character)}</td>
-            </tr>
-            <tr>
-              <td class="label" style="width: 40mm;">特长</td>
-              <td style="text-align: left;">${formatValue(data.speciality)}</td>
-            </tr>
-            <tr>
-              <td class="label" style="width: 40mm;">最有价值的项目和自我收获</td>
-              <td style="text-align: left;">${formatValue(data.project_detail)}</td>
-            </tr>
-            <tr>
-              <td class="label" style="width: 40mm;">工作职责理解</td>
-              <td style="text-align: left;">${formatValue(data.job_duty)}</td>
-            </tr>
-            <tr>
-              <td class="label" style="width: 40mm;">职业规划</td>
-              <td style="text-align: left;">${formatValue(data.plan)}</td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="section">
-          <div class="section-title">六、家庭信息</div>
-          <table>
-            <tr style="background: #e6e6e6;">
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">姓名</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">关系</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">工作单位</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">职位</td>
-              <td style="border: 1px solid #333; padding: 3px; font-size: 9pt;">年龄</td>
-            </tr>
-            ${family}
-          </table>
-        </div>
-
-        <div class="footer">
-          招聘系统-EVO | 本登记表由系统自动生成
-        </div>
-
-        <!-- 声明 -->
-        <div class="declaration">
-          <div class="declaration-title">声明</div>
-          <div class="declaration-content">
-            本人已经明白及接受上述之个人资料保障原则。同时，有关本人在求职申请表上所填写之一切均真实及正确。在必要时同意授权上海进化时代营销策划有限公司对上述信息进行核实确认。一旦以上任意陈述被发现不实或本人蓄意隐瞒相关事实，公司有权立即解除劳动关系并不给予任何经济补偿。
-          </div>
-          <div class="declaration-sign">
-            <span>应聘人签署：</span>
-            <span class="sign-line">　</span>
-            <span>应聘日期：</span>
-            <span class="sign-line">　</span>
-          </div>
-        </div>
-    </body>
-    </html>
-  `;
+// 格式化值
+function formatValue(value: string | undefined | null): string {
+  if (value === undefined || value === null || value === '') return '无';
+  return value;
 }
 
-// 生成 PDF（使用 Puppeteer 在无头浏览器中渲染）
+// 生成 PDF
 export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; filename: string; base64: string }> {
-  let browser = null;
-  
   try {
-    const args = [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--disable-web-security',
-      '--disable-software-rasterizer',
-      '--disable-extensions',
-      '--disable-background-networking',
-      '--safebrowsing-disable-auto-update',
-      '--disable-sync',
-      '--metrics-recording-only',
-      '--disable-default-apps',
-      '--no-first-run',
-      '--single-process',
-    ];
-    
-    browser = await puppeteer.launch({
-      headless: true,
-      args,
-      executablePath: await chromium.executablePath(),
-      timeout: 30000, // 30秒超时
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 15;
+
+    // 标题
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('应聘人员信息登记表', pageWidth / 2, y, { align: 'center' });
+    y += 8;
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`提交时间：${new Date().toLocaleString('zh-CN')}`, pageWidth / 2, y, { align: 'center' });
+    y += 10;
+
+    // 分隔线
+    doc.setLineWidth(0.5);
+    doc.line(15, y, pageWidth - 15, y);
+    y += 8;
+
+    // 一、应聘渠道
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('一、应聘渠道', 15, y);
+    y += 6;
+
+    autoTable(doc, {
+      startY: y,
+      head: [],
+      body: [
+        ['应聘渠道', formatValue(data.channel_type), '应聘岗位', formatValue(data.post)],
+        ['预计到岗时间', formatValue(data.entry_date), '岗位性质', formatValue(data.job_type)],
+        ['当前状态', formatValue(data.current_status), '目前月薪（税前）', formatValue(data.current_salary)],
+        ['期望月薪（税前）', formatValue(data.salary_expectation), '', ''],
+      ],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 35 }, 1: { cellWidth: 45 }, 2: { cellWidth: 35 }, 3: { cellWidth: 45 } },
+      margin: { left: 15, right: 15 },
     });
+    y = (doc as any).lastAutoTable.finalY + 10;
 
-    const page = await browser.newPage();
-    await page.setViewport({ width: 794, height: 1123 });
+    // 二、个人资料
+    doc.setFontSize(11);
+    doc.text('二、个人资料', 15, y);
+    y += 6;
 
-    const html = generateResumeHTML(data);
-    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 20000 });
-
-    // 等待内容稳定
-    await page.waitForFunction(() => document.readyState === 'complete', { timeout: 10000 }).catch(() => {});
-
-    const pdfUint8Array = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '0mm',
-        right: '0mm',
-        bottom: '0mm',
-        left: '0mm'
-      }
+    autoTable(doc, {
+      startY: y,
+      head: [],
+      body: [
+        ['姓名（中文）', formatValue(data.name), '姓名（英文）', formatValue(data.name_en)],
+        ['性别', formatValue(data.sex), '出生日期', formatValue(data.birthday)],
+        ['毕业院校', formatValue(data.school), '最高学历', formatValue(data.degree)],
+        ['专业', formatValue(data.major), '婚姻状况', formatValue(data.marriage)],
+        ['手机', formatValue(data.mobilephone), '电子邮件', formatValue(data.email)],
+        ['户籍地', formatValue(data.household_address), '', ''],
+        ['现居住地址', formatValue(data.living_address), '', ''],
+        ['是否曾患重大疾病', formatValue(data.has_disease), '是否发生劳动纠纷', formatValue(data.has_dispute)],
+        ['是否有犯罪记录', formatValue(data.has_criminal), '', ''],
+      ],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 40 }, 1: { cellWidth: 50 }, 2: { cellWidth: 40 }, 3: { cellWidth: 40 } },
+      didParseCell: function(data: any) {
+        if (data.column.index === 2 && data.row.section === 'body' && !data.cell.text[0]) {
+          data.cell.styles.cellWidth = 80;
+        }
+      },
+      margin: { left: 15, right: 15 },
     });
+    y = (doc as any).lastAutoTable.finalY + 10;
 
-    const pdfBuffer = Buffer.from(pdfUint8Array);
-    const base64 = pdfBuffer.toString('base64');
-    await browser.close();
+    // 三、教育经历
+    doc.setFontSize(11);
+    doc.text('三、教育经历', 15, y);
+    y += 6;
 
+    autoTable(doc, {
+      startY: y,
+      head: [['起始', '终止', '学校名称', '专业', '学历', '证书/学位']],
+      body: data.education_detail?.length > 0
+        ? data.education_detail.map(e => [
+            formatValue(e.start),
+            formatValue(e.end),
+            formatValue(e.school),
+            formatValue(e.major),
+            formatValue(e.degree),
+            formatValue(e.certificate),
+          ])
+        : [['无', '', '', '', '', '']],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold' },
+      margin: { left: 15, right: 15 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // 四、工作经历
+    doc.setFontSize(11);
+    doc.text('四、工作经历', 15, y);
+    y += 6;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['起始', '终止', '公司名称', '部门', '职位', '薪资']],
+      body: data.career_detail?.length > 0
+        ? data.career_detail.map(w => [
+            formatValue(w.start),
+            formatValue(w.end),
+            formatValue(w.company),
+            formatValue(w.department),
+            formatValue(w.job),
+            formatValue(w.salary),
+          ])
+        : [['无', '', '', '', '', '']],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold' },
+      margin: { left: 15, right: 15 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 6;
+
+    // 工作经历详情
+    if (data.career_detail?.length > 0) {
+      data.career_detail.forEach((w, index) => {
+        autoTable(doc, {
+          startY: y,
+          head: [],
+          body: [
+            ['离职原因', formatValue(w.reason)],
+            ['证明人及联系方式', formatValue(w.reference)],
+          ],
+          theme: 'grid',
+          styles: { fontSize: 9, cellPadding: 2 },
+          headStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold' },
+          columnStyles: { 0: { cellWidth: 50 } },
+          margin: { left: 15, right: 15 },
+        });
+        y = (doc as any).lastAutoTable.finalY + 4;
+      });
+    }
+    y += 6;
+
+    // 五、个人特质
+    doc.setFontSize(11);
+    doc.text('五、个人特质', 15, y);
+    y += 6;
+
+    autoTable(doc, {
+      startY: y,
+      head: [],
+      body: [
+        ['性格特点', formatValue(data.character)],
+        ['特长', formatValue(data.speciality)],
+        ['最有价值的项目和自我收获', formatValue(data.project_detail)],
+        ['工作职责理解', formatValue(data.job_duty)],
+        ['职业规划', formatValue(data.plan)],
+      ],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 3, minCellHeight: 10 },
+      headStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 60 } },
+      margin: { left: 15, right: 15 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // 六、家庭信息
+    doc.setFontSize(11);
+    doc.text('六、家庭信息', 15, y);
+    y += 6;
+
+    autoTable(doc, {
+      startY: y,
+      head: [['姓名', '关系', '工作单位', '职位', '年龄']],
+      body: data.family_info?.length > 0
+        ? data.family_info.map(f => [
+            formatValue(f.name),
+            formatValue(f.relation),
+            formatValue(f.organ),
+            formatValue(f.work),
+            formatValue(f.age),
+          ])
+        : [['无', '', '', '', '']],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 2 },
+      headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold' },
+      margin: { left: 15, right: 15 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    // 声明
+    doc.setFontSize(11);
+    doc.text('声明', 15, y);
+    y += 6;
+
+    doc.setFontSize(9);
+    const declaration = '本人已经明白及接受上述之个人资料保障原则。同时，有关本人在求职申请表上所填写之一切均真实及正确。在必要时同意授权上海进化时代营销策划有限公司对上述信息进行核实确认。一旦以上任意陈述被发现不实或本人蓄意隐瞒相关事实，公司有权立即解除劳动关系并不给予任何经济补偿。';
+    const lines = doc.splitTextToSize(declaration, pageWidth - 30);
+    doc.text(lines, 15, y);
+    y += lines.length * 5 + 10;
+
+    doc.text('应聘人签署：________________', 15, y);
+    doc.text('应聘日期：________________', pageWidth - 80, y);
+
+    // 生成文件
+    const pdfBuffer = doc.output('arraybuffer');
+    const pdfArray = new Uint8Array(pdfBuffer);
+    const buffer = Buffer.from(pdfArray);
     const timestamp = Date.now();
     const sanitizedName = (data.name || 'Unknown').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
     const filename = `Resume_${sanitizedName}_${timestamp}.pdf`;
-    
-    return { buffer: pdfBuffer, filename, base64 };
+
+    return {
+      buffer,
+      filename,
+      base64: buffer.toString('base64'),
+    };
   } catch (error) {
     console.error('生成 PDF 失败:', error);
-    if (browser) {
-      await browser.close().catch(() => {});
-    }
     throw error;
   }
 }
 
-// 获取 PDF 下载链接（使用 URL-safe Base64 编码）
+// 获取 PDF 下载链接
 export function getPDFDownloadUrl(filename: string, base64: string): string {
   const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
-  
-  // 使用 URL-safe Base64 编码（替换 +/= 为 -_.）
   const encoded = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '.');
   return `${domain}/d?f=${encodeURIComponent(filename)}&d=${encoded}`;
 }
 
-// 获取简单下载链接（需要先保存文件）
-export function getPDFDownloadUrlSimple(filename: string): string {
-  const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
-  return `${domain}/resumes/${filename}`;
-}
-
 export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Promise<void> {
-  const formatValue = (value: string | undefined | null) => {
+  const formatVal = (value: string | undefined | null) => {
     if (value === undefined || value === null || value === '') return '无';
     return value;
   };
 
-  // 简化消息，不包含 PDF 下载按钮（链接太长会超限）
   const message = {
     msg_type: 'text',
     content: {
-      text: `📋 新简历提交通知\n\n👤 姓名：${formatValue(data.name)}\n📮 应聘岗位：${formatValue(data.post)}\n📱 手机：${formatValue(data.mobilephone)}\n📧 邮箱：${formatValue(data.email)}\n🏫 学历：${formatValue(data.school)} | ${formatValue(data.degree)}\n💼 当前状态：${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}\n💰 期望薪资：${formatValue(data.salary_expectation)}\n\n⏰ 提交时间：${new Date().toLocaleString('zh-CN')}`
+      text: `📋 新简历提交通知\n\n👤 姓名：${formatVal(data.name)}\n📮 应聘岗位：${formatVal(data.post)}\n📱 手机：${formatVal(data.mobilephone)}\n📧 邮箱：${formatVal(data.email)}\n🏫 学历：${formatVal(data.school)} | ${formatVal(data.degree)}\n💼 当前状态：${formatVal(data.current_status)}\n💰 期望薪资：${formatVal(data.salary_expectation)}\n\n⏰ 提交时间：${new Date().toLocaleString('zh-CN')}`,
     }
   };
 
