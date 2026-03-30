@@ -427,65 +427,11 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
     return value;
   };
 
+  // 简化消息，不包含 PDF 下载按钮（链接太长会超限）
   const message = {
-    msg_type: 'interactive',
-    card: {
-      config: { wide_screen_mode: true },
-      header: {
-        title: { tag: 'plain_text', content: '📋 新简历提交通知' },
-        template: 'blue'
-      },
-      elements: [
-        {
-          tag: 'div',
-          text: {
-            tag: 'lark_md',
-            content: `**【基本信息】**\n**姓名：**${formatValue(data.name)}\n**应聘岗位：**${formatValue(data.post)}\n**性别：**${formatValue(data.sex)} | **出生日期：**${formatValue(data.birthday)}`
-          }
-        },
-        { tag: 'hr' },
-        {
-          tag: 'div',
-          text: {
-            tag: 'lark_md',
-            content: `**【联系方式】**\n**手机：**${formatValue(data.mobilephone)}\n**邮箱：**${formatValue(data.email)}`
-          }
-        },
-        { tag: 'hr' },
-        {
-          tag: 'div',
-          text: {
-            tag: 'lark_md',
-            content: `**【应聘信息】**\n**应聘渠道：**${formatValue(data.channel_type)}${data.channel_referrer ? `（推荐人：${formatValue(data.channel_referrer)}）` : ''}\n**岗位性质：**${formatValue(data.job_type)}\n**当前状态：**${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}\n**薪资：**${formatValue(data.current_salary)} / ${formatValue(data.salary_expectation)}`
-          }
-        },
-        { tag: 'hr' },
-        {
-          tag: 'div',
-          text: {
-            tag: 'lark_md',
-            content: `**【学历背景】**\n${formatValue(data.school)} | ${formatValue(data.degree)}`
-          }
-        },
-        { tag: 'hr' },
-        {
-          tag: 'action',
-          actions: [
-            {
-              tag: 'button',
-              text: { tag: 'plain_text', content: '📥 下载PDF简历' },
-              type: 'primary',
-              url: pdfUrl
-            }
-          ]
-        },
-        {
-          tag: 'note',
-          elements: [
-            { tag: 'plain_text', content: `提交时间：${new Date().toLocaleString('zh-CN')}` }
-          ]
-        }
-      ]
+    msg_type: 'text',
+    content: {
+      text: `📋 新简历提交通知\n\n👤 姓名：${formatValue(data.name)}\n📮 应聘岗位：${formatValue(data.post)}\n📱 手机：${formatValue(data.mobilephone)}\n📧 邮箱：${formatValue(data.email)}\n🏫 学历：${formatValue(data.school)} | ${formatValue(data.degree)}\n💼 当前状态：${data.current_status === '其他' ? formatValue(data.current_status_other) : formatValue(data.current_status)}\n💰 期望薪资：${formatValue(data.salary_expectation)}\n\n⏰ 提交时间：${new Date().toLocaleString('zh-CN')}`
     }
   };
 
