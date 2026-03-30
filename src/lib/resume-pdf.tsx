@@ -364,19 +364,32 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
       '--disable-dev-shm-usage',
       '--disable-gpu',
       '--disable-web-security',
+      '--disable-software-rasterizer',
+      '--disable-extensions',
+      '--disable-background-networking',
+      '--safebrowsing-disable-auto-update',
+      '--disable-sync',
+      '--metrics-recording-only',
+      '--disable-default-apps',
+      '--no-first-run',
+      '--single-process',
     ];
     
     browser = await puppeteer.launch({
       headless: true,
       args,
       executablePath: await chromium.executablePath(),
+      timeout: 30000, // 30秒超时
     });
 
     const page = await browser.newPage();
     await page.setViewport({ width: 794, height: 1123 });
 
     const html = generateResumeHTML(data);
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 20000 });
+
+    // 等待内容稳定
+    await page.waitForFunction(() => document.readyState === 'complete', { timeout: 10000 }).catch(() => {});
 
     const pdfUint8Array = await page.pdf({
       format: 'A4',
@@ -401,7 +414,7 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
   } catch (error) {
     console.error('生成 PDF 失败:', error);
     if (browser) {
-      await browser.close();
+      await browser.close().catch(() => {});
     }
     throw error;
   }
