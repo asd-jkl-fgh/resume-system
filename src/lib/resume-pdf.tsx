@@ -354,7 +354,7 @@ function generateResumeHTML(data: ResumeData): string {
 }
 
 // 生成 PDF（使用 Puppeteer 在无头浏览器中渲染）
-export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; filename: string; filepath: string }> {
+export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; filename: string; base64: string }> {
   let browser = null;
   
   try {
@@ -390,22 +390,14 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
     });
 
     const pdfBuffer = Buffer.from(pdfUint8Array);
+    const base64 = pdfBuffer.toString('base64');
     await browser.close();
 
     const timestamp = Date.now();
     const sanitizedName = (data.name || 'Unknown').replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
     const filename = `Resume_${sanitizedName}_${timestamp}.pdf`;
     
-    // 使用 /tmp 目录保存 PDF（生产环境可写）
-    const tmpDir = '/tmp/resumes';
-    if (!fs.existsSync(tmpDir)) {
-      fs.mkdirSync(tmpDir, { recursive: true });
-    }
-    
-    const filepath = path.join(tmpDir, filename);
-    fs.writeFileSync(filepath, pdfBuffer);
-    
-    return { buffer: pdfBuffer, filename, filepath };
+    return { buffer: pdfBuffer, filename, base64 };
   } catch (error) {
     console.error('生成 PDF 失败:', error);
     if (browser) {
@@ -415,9 +407,18 @@ export async function generatePDF(data: ResumeData): Promise<{ buffer: Buffer; f
   }
 }
 
-export function getPDFDownloadUrl(filename: string): string {
+// 获取 PDF 下载链接（使用 Base64 数据）
+export function getPDFDownloadUrl(filename: string, base64: string): string {
   const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
-  return `${domain}/api/resume/download?file=${encodeURIComponent(filename)}`;
+  // 将 Base64 编码后附加在 URL 中
+  const encoded = Buffer.from(base64).toString('base64');
+  return `${domain}/api/resume/download?file=${encodeURIComponent(filename)}&data=${encoded}`;
+}
+
+// 获取简单下载链接（需要先保存文件）
+export function getPDFDownloadUrlSimple(filename: string): string {
+  const domain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
+  return `${domain}/resumes/${filename}`;
 }
 
 export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Promise<void> {
@@ -508,8 +509,8 @@ export async function sendToFeishuWebhook(data: ResumeData, pdfUrl: string): Pro
 }
 
 export async function processResumeAndNotify(data: ResumeData): Promise<{ pdfUrl: string }> {
-  const { filename } = await generatePDF(data);
-  const pdfUrl = getPDFDownloadUrl(filename);
+  const { filename, base64 } = await generatePDF(data);
+  const pdfUrl = getPDFDownloadUrl(filename, base64);
   await sendToFeishuWebhook(data, pdfUrl);
   return { pdfUrl };
 }
